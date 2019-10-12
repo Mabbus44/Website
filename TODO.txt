@@ -1,0 +1,14 @@
+* Join current games
+* Choose color
+* Give up button
+* Autofill remaining squares
+* Count points button
+* Match history in profile
+* Replay page
+* css login
+* css createAccount
+* css main
+* css challange
+* css profile
+* css board
+* css replay
