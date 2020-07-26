@@ -1,14 +1,43 @@
-* Join current games
-* Choose color
-* Give up button
-* Autofill remaining squares
-* Count points button
+later versions
+* Remove dead stones in scoring
+* Preview score
 * Match history in profile
-* Replay page
+* Add languages
 * css login
 * css createAccount
 * css main
 * css challange
+* css choseColor
 * css profile
 * css board
-* css replay
+* Ipad support
+
+V 1.00
+* Join current games
+* Show joined game
+* Choose color
+* Add player IDs to challange page
+* Dont allow challanging players that are already challanged or ingame
+* Add remove challange button
+* Let a player play even if he has no valid plays
+* Return whos made the last move from getBoard()
+* Allow to place stone if players turn
+* Dont allow board repetition
+* Check if player is logged in before placing stone
+* Give up button
+* Add columns, `endCause`, `points1`, `points2` to matchList
+* Pass turn button
+* Remove "color" from database
+* Two passes ends the game
+* Move server connection to separate file
+* Add support for test site
+* Write errors to database
+* Count points
+* Dont let players join ended matches
+* Show popup after buttons like "place stone" is pressed
+* Place stones at intersections
+* Update board automatically
+* Add induvidual moves on client side instead of getting entire board every time
+* Quit match when its over
+* Username and password policy
+* Let players challange players after their current game has ended (bugg prevents that now)

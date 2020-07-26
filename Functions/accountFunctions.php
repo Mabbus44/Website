@@ -1,39 +1,35 @@
 <?php
+include_once(__DIR__."/../Functions/commonFunctions.php");
+
 function checkIfLoggedIn(){
 	session_start();
-	if(isset($_SESSION["username"])){
+	if(issetSession("username")){
 		return true;
 	}
+	echo header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/logIn.php");
 	return false;
 }
 
 function getNameFromID($id){
-	$servername = "rasmus.today.mysql";
-	$username = "rasmus_today";
-	$password = "9Nah5fEsDTayJ5doJVaXuAb6";
-	$dbname = "rasmus_today";
-
 	//Conect to database
-	$conn = mysqli_connect($servername, $username, $password, $dbname);
-	if(!$conn){
-		$result["error"] = "error: Database connection error --- " . $conn.error;
-		echo json_encode($result);
+	$conn = dbCon();
+	if(!$conn)
 		exit();
-	}
 
 	//Find username
-	$stmt = $conn->prepare("SELECT `username`, `id` FROM `credentials` WHERE `id` = ?");
+	$stmt = ps($conn, "SELECT `username`, `id` FROM `tableName` WHERE `id` = ?", "credentials");
 	$stmt->bind_param("i", $id);
 	if(!$stmt->execute()){
-		$result["error"] = "error: Could note execute prepared statement";
-		echo json_encode($result);
+		er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `SELECT `username`, `id` FROM `credentials` WHERE `id` = ?`");
 		exit();
 	}
 	$result = $stmt->get_result();
+	$stmt->close();
 	if($result->num_rows > 0){
 		$row = $result->fetch_assoc();
 		return $row["username"];
 	}
+	$conn->close();
 	return "";
 }
 ?>

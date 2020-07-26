@@ -1,3 +1,8 @@
+<?php
+	include_once(__DIR__."/../Functions/accountFunctions.php");
+	checkIfLoggedIn();
+	include_once(__DIR__."/../Functions/boardFunctions.php");
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -8,13 +13,15 @@
 	<body>
 		<canvas id="goCanvas" style="border:1px solid #000000;"></canvas>
 		<button onclick="btnExecute()">Confirm!</button>
-		<button onclick="btnClear()">Clear board!</button>
-		<input type="number" id="color" min="0" max="1">
+		<button onclick="btnPass()">Pass</button>
+		<button onclick="btnGiveUp()">Give up</button>
+		<label id="yourTurn"></label>
+		<label id="dbg"></label>
 		<script>
-			//document.getElementById("goCanvas").addEventListener("click", canvasClick, false);
-			window.alert("hej");
-			tempa();
-			window.alert("hå");
+			document.getElementById("goCanvas").addEventListener("click", canvasClick, false);
+			matchIndex = <?php echo $_REQUEST["id"]; ?>;
+			playerColor = <?php echo getPlayerColor($_REQUEST["id"]); ?>;
+			loadBoard();
 		</script>
 	</body>
 </html>

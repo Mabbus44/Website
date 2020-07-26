@@ -1,70 +1,59 @@
 <?php
+include_once(__DIR__."/../Functions/commonFunctions.php");
+
 session_start();
-$servername = "rasmus.today.mysql";
-$username = "rasmus_today";
-$password = "9Nah5fEsDTayJ5doJVaXuAb6";
-$dbname = "rasmus_today";
 
 //Conect to database
-$conn = mysqli_connect($servername, $username, $password, $dbname);
-if(!$conn){
-	$result["error"] = "error: Database connection error --- " . $conn.error;
-	echo json_encode($result);
+$conn = dbCon();
+if(!$conn)
 	exit();
-}
+
 //Check if usename is valid
-if(false){
-	$result["error"] = "error: Invalid username";
-	echo json_encode($result);
-	exit();
+if(!preg_match("/^[\\p{L}0-9_-]{2,255}$/u", $_POST["username"])) {
+	exit("Invalid username (at least 2 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)");
 }
+
 //Check if password is valid
-if(false){
-	$result["error"] = "error: Invalid password";
-	echo json_encode($result);
-	exit();
+if(!preg_match("/^[\\p{L}0-9_-]{3,255}$/u", $_POST["password"])){
+	exit("Invalid password (at least 3 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)");
 }
 //Add salt, encrypt, add pepper
 $hashedPassword = password_hash($_POST["password"], PASSWORD_DEFAULT);
 $enc_iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length("aes-128-ctr"));
-$pepperedPassword = openssl_encrypt($hashedPassword, "aes-128-ctr", "Zu82HUsrKc7xuxBCqvUW", 0, $enc_iv) . "::" . bin2hex($enc_iv);
+$pepperedPassword = openssl_encrypt($hashedPassword, "aes-128-ctr", pepper(), 0, $enc_iv) . "::" . bin2hex($enc_iv);
 $postUsername = $_POST["username"];
 
-//Get next free user ID
-$query = "SELECT `value` FROM `settings` WHERE `setting` = 'freeUserID'";
-$id = $conn->query($query)->fetch_assoc()['value'];
-if(!isset($id) or $id<1){
-	$result["error"] = "error: Could not get free id " . $id;
-	mysqli_close($conn);
-	echo json_encode($result);
-	exit();
-}
-
 //Insert username and password into database
-$stmt = $conn->prepare("INSERT INTO credentials (username, password, id) VALUES (?, ?, ?)");
-$stmt->bind_param("ssi", $postUsername, $pepperedPassword, $id);
+$stmt = ps($conn, "INSERT INTO `tableName` (username, password) VALUES (?, ?)", "credentials");
+$stmt->bind_param("ss", $postUsername, $pepperedPassword);
 if(!$stmt->execute()){
-	$result["error"] = "error: Could not insert credentials into database ";
-	mysqli_close($conn);
-	echo json_encode($result);
+	er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `INSERT INTO `credentials` (username, password) VALUES (?, ?)`");
 	exit();
 }
 $stmt->close();
 
-//Increase freeID by one
-$id = $id+1;
-$stmt = $conn->prepare("UPDATE `settings` SET `value`=(?) where `setting` = 'freeUserID'");
-$stmt->bind_param("i", $id);
+
+//Get user ID
+$stmt = ps($conn, "SELECT id FROM tableName WHERE username=?", "credentials");
+$stmt->bind_param("s", $postUsername);
 if(!$stmt->execute()){
-	$result["error"] = "error: Could not infcrease free id ";
-	mysqli_close($conn);
-	echo json_encode($result);
+	er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . "SELECT id FROM credentials WHERE username=?");
 	exit();
 }
-
+$dbResult = $stmt->get_result();
+if($dbResult->num_rows == 0){
+	er("Newly created user did not exist in crateAccount.php");
+	exit();
+}
+if($dbResult->num_rows > 1){
+	er("Multiple users with the same name found in crateAccount.php");
+	exit();
+}
+$row = $dbResult->fetch_assoc();
 $stmt->close();
 $conn->close();
-$_SESSION["username"] = $postUsername;
-$_SESSION["id"] = $id;
-header("Location: ../Pages/main.php");
+
+setSession("username", $postUsername);
+setSession("id", $row["id"]);
+header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/main.php");
 ?>

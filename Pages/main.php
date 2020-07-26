@@ -1,10 +1,7 @@
 <?php
-	include_once("../Functions/accountFunctions.php");
-	if(!checkIfLoggedIn()){
-		header("Location: logIn.php");
-	}
-	include("../Functions/mainFunctions.php");
-	acceptChallange();
+	include_once(__DIR__."/../Functions/accountFunctions.php");
+	checkIfLoggedIn();
+	include_once(__DIR__."/../Functions/mainFunctions.php");
 ?>
 <!DOCTYPE html>
 <html>
@@ -17,7 +14,7 @@
 		<form action="../Pages/challange.php" method="post">
 			<button type="submit">Challange players</button>
 		</form>
-		<form action="../Pages/main.php" method="post">
+		<form action="../Pages/choseColor.php" method="post">
 			<?php
 				listOfChallanges();
 			?>
@@ -33,4 +30,5 @@
 			listOfMatches();
 		?>
 		<button type="button" id="goToGame" onclick="btnGoToGame()">Go to game</button>
+	</body>
 </html>

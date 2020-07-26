@@ -3,6 +3,13 @@ var boardSize = 19;
 var squareSize = 30;
 var markedSquare = [-1, -1];
 var board = [];
+var lastColor = 0;
+var playerColor = 0;
+var matchIndex = 0;
+var nextMoveIndex = 0;
+var lastAction = "playStone";
+
+//Empty board
 for(var x = 0; x < 19; x++){
     board[x] = [];    
     for(var y = 0; y < 19; y++){ 
@@ -10,23 +17,30 @@ for(var x = 0; x < 19; x++){
     }    
 }
 
-function tempa(){
-	window.alert("tempa");
-}
-
-//Clear board
-function btnClear(){
+//Place stone
+function btnExecute(){
+	if(markedSquare[0] == -1){
+		return;
+	}
 	try {
 		$.ajax({
 			type: "POST",
-			url: "http://rasmus.today/Functions/clearBoard.php",
+			url: "../Functions/placeStone.php",
+			data: {x: markedSquare[0], y: markedSquare[1], matchID: matchIndex},
 			success: function(obj, textstatus){
 				var obj = JSON.parse(obj);
-				if("error" in obj){
-					window.alert(obj);
+				if("info" in obj){
+					window.alert(obj["info"]);
+					if(obj["info"] == "Stone added"){
+						board[obj["x"]][obj["y"]] = playerColor;
+						captureStones(obj["x"], obj["y"], playerColor);
+						markedSquare = [-1, -1];
+						nextMoveIndex = nextMoveIndex + 1;
+						document.getElementById("yourTurn").innerHTML = "not Your turn!";
+						startServerPushing();
+						draw();
+					}
 				}
-				markedSquare = [-1, -1];
-				loadBoard();
 			}
 		});
 	}
@@ -35,25 +49,55 @@ function btnClear(){
 	}
 }
 
-//Place stone
-function btnExecute(){
-	if(markedSquare[0] == -1){
-		return;
+//Give up
+function btnGiveUp(){
+	if (!confirm('Are you sure you want to give up?')) {
+		return 0;
 	}
-	var inputColor = document.getElementById("color").value;	
 	try {
 		$.ajax({
 			type: "POST",
-			url: "http://rasmus.today/Functions/placeStone.php",
-			data: {x: markedSquare[0], y: markedSquare[1], color: inputColor},
+			url: "../Functions/giveUp.php",
+			data: {matchID: matchIndex},
 			success: function(obj, textstatus){
 				var obj = JSON.parse(obj);
-				if("error" in obj){
-					window.alert(obj["error"]);
+				if("info" in obj){
+					window.alert(obj["info"]);
+					if(obj["info"].includes("Game ended")){
+						window.location.href = "../Pages/main.php";
+					}
 				}
-				markedSquare = [-1, -1];
-				loadBoard();
-				document.getElementById("color").setAttribute("value", 1-inputColor);
+			}
+		});
+	}
+	catch(err) {
+		window.alert(err.message);
+	}
+}
+
+//Pass turn
+function btnPass(){
+	try {
+		$.ajax({
+			type: "POST",
+			url: "../Functions/passTurn.php",
+			data: {matchID: matchIndex},
+			success: function(obj, textstatus){
+				var obj = JSON.parse(obj);
+				if("info" in obj){
+					window.alert(obj["info"]);
+					if(obj["info"] == "Turn passed"){
+						markedSquare = [-1, -1];
+						nextMoveIndex = nextMoveIndex + 1;
+						document.getElementById("yourTurn").innerHTML = "not Your turn!";
+						lastAction = "pass";
+						startServerPushing();
+						draw();
+					}
+					if(obj["info"].includes("Game ended")){
+						window.location.href = "../Pages/main.php";
+					}
+				}
 			}
 		});
 	}
@@ -96,14 +140,12 @@ function draw(){
 	ctx.fillStyle = "#DFC156";
 	ctx.fillRect(0,0,boardSize*squareSize,boardSize*squareSize);
 	for (var i=0; i<boardSize; i++){
-		if(i>0){
-			ctx.moveTo(0, i*squareSize);
-			ctx.lineTo(boardSize*squareSize, i*squareSize);
-			ctx.stroke();
-			ctx.moveTo(i*squareSize, 0);
-			ctx.lineTo(i*squareSize, boardSize*squareSize);
-			ctx.stroke();
-		}
+		ctx.moveTo(0.5*squareSize, (i+0.5)*squareSize);
+		ctx.lineTo((boardSize-0.5)*squareSize, (i+0.5)*squareSize);
+		ctx.stroke();
+		ctx.moveTo((i+0.5)*squareSize, 0.5*squareSize);
+		ctx.lineTo((i+0.5)*squareSize, (boardSize-0.5)*squareSize);
+		ctx.stroke();
 	}
 
 	//Draw stones
@@ -136,18 +178,25 @@ function draw(){
 }
 
 //Loads board from database
-function loadBoard(matchIndex){
-	window.alert("daj");
+function loadBoard(){
+	var url = "../Functions/getBoard.php?matchIndex=" + matchIndex;
 	try{
 		$.ajax({
 			type: "GET",
-			url: "http://rasmus.today/Functions/getBoard.php?gameIndex=" + matchIndex,
+			url: url,
 			success: function(obj, info, textstatus){
 				var obj = JSON.parse(obj);
-				if("error" in obj){
-					window.alert(obj["error"]);
-				}
 				board = obj["board"];
+				lastColor = obj["lastColor"];
+				nextMoveIndex = obj["currMove"];
+				lastAction = obj["lastAction"];
+				if(lastColor == 1-playerColor){
+					document.getElementById("yourTurn").innerHTML = "Your turn!";
+				}
+				else{
+					startServerPushing();
+					document.getElementById("yourTurn").innerHTML = "not Your turn!";
+				}
 				draw();
 			}
 		});
@@ -166,4 +215,149 @@ function mouseToBoard(x, y){
 		retY = -1;
 	}
 	return [retX, retY];
+}
+
+//Start server pushing
+function startServerPushing(){
+	document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Server pushing started";
+	var source = new EventSource("../Functions/getMove.php?matchIndex=" + matchIndex + "&moveIndex=" + nextMoveIndex);
+	source.onmessage = function(event) {
+		var data = JSON.parse(event.data);
+		document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SEE Message: " + JSON.stringify(data);
+		source.close();
+		//Check if we got match results or next move
+		if("winner" in data){
+			if(data["endCause"] == "pass"){
+				window.alert("Game ended. " + $data["winner"] + " won. Score: " + $data["points1"] + "-" + $data["points2"]);
+			}
+			if(data["endCause"] == "surrender"){
+				window.alert($data["winner"] + " won since oponent gave up");
+			}
+			window.location.href = "../Pages/main.php";
+		}
+		else{
+			if(data["moveIndex"] == nextMoveIndex){
+				//If oponent played a stone, add it to the board
+				if(data["action"] == "playStone"){
+					board[data["x"]][data["y"]] = 1-playerColor;
+					captureStones(data["x"], data["y"], 1-playerColor);
+					markedSquare = [-1, -1];
+				}
+				//If oponent passed and you passed last turn, get game results
+				if(data["action"] == "pass" && lastAction == "pass"){
+					var source2 = new EventSource("../Functions/getMatchResult.php?matchIndex=" + matchIndex);
+					source2.onmessage = function(event2) {
+						var data2 = JSON.parse(event2.data);
+						document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Match result: " + JSON.stringify(data2);
+						source2.close();
+						window.alert("Game ended. " + data2["winner"] + " won. Score: " + data2["points1"] + "-" + data2["points2"]);
+						window.location.href = "../Pages/main.php";
+					};
+				}
+				//If oponent surrendered, game ended
+				if(data["action"] == "giveUp"){
+					window.alert("You won since oponent gave up");
+					window.location.href = "../Pages/main.php";
+				}
+				nextMoveIndex = nextMoveIndex + 1;
+				document.getElementById("yourTurn").innerHTML = "Your turn!";
+				draw();
+			}
+		}
+	};
+}
+
+//Get surrounded stones
+function getSurroundedStones(x, y, color){
+	var capStones = [];
+	var capStonesSize = 0;
+	var surrounded = true;
+	var checkID = 0;
+	if(x>=0 && x<19 && y>=0 && y<19){
+		if(board[x][y] == color){
+			capStones = [];
+			capStones[0] = [x, y];
+			capStonesSize = 1;
+			surrounded = true;
+		}
+		else{
+			capStones = [];
+			capStonesSize = 0;
+			surrounded = false;
+		}
+		checkID = 0;
+		while(checkID<capStonesSize && surrounded){
+			for(var i=0; i<4 && surrounded; i++){
+				if(i==0){
+					cX = capStones[checkID][0]-1;
+					cY = capStones[checkID][1];
+				}
+				if(i==1){
+					cX = capStones[checkID][0];
+					cY = capStones[checkID][1]-1;
+				}
+				if(i==2){
+					cX = capStones[checkID][0];
+					cY = capStones[checkID][1]+1;
+				}
+				if(i==3){
+					cX = capStones[checkID][0]+1;
+					cY = capStones[checkID][1];
+				}
+				if(cX>=0 && cX<19 && cY>=0 && cY<19){
+					if(board[cX][cY] == color){
+						unique = true;
+						for(i2=0; i2<capStonesSize && unique; i2++){
+							if(capStones[i2] == [cX, cY]){
+								unique = false;
+							}
+						}
+						if(unique){
+							capStones[capStonesSize] = [cX, cY];
+							capStonesSize++;
+						}
+					}
+					if(board[cX][cY] == 2){
+						surrounded = false;
+						capStones = [];
+					}
+				}
+			}
+			checkID++;
+		}
+	}
+	return capStones;
+}
+
+//Capture surrounded stones
+function captureStones(x, y, color)
+{
+	var capStones = [];
+	var tX;
+	var tY;
+	for(var i=0; i<4; i++){
+		if(i==0){
+			tX = x-1;
+			tY = y;
+		}
+		if(i==1){
+			tX = x;
+			tY = y-1;
+		}
+		if(i==2){
+			tX = x;
+			tY = y+1;
+		}
+		if(i==3){
+			tX = x+1;
+			tY = y;
+		}
+		capStones = getSurroundedStones(tX, tY, 1-color);
+		if(capStones.length>0){
+			for(var i2=0; i2<capStones.length; i2++){
+				board[capStones[i2][0]][capStones[i2][1]] = 2;
+			}
+		}
+	}
+	return;
 }

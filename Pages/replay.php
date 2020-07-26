@@ -1,8 +1,6 @@
 <?php
-include("../Functions/accountFunctions.php");
-if(!checkIfLoggedIn()){
-	header("Location: logIn.php");
-}
+	include_once(__DIR__."/../Functions/accountFunctions.php");
+	checkIfLoggedIn();
 ?>
 <!DOCTYPE html>
 <html>

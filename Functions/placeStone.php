@@ -1,83 +1,62 @@
 <?php
-include "boardFunctions.php";
-$servername = "rasmus.today.mysql";
-$username = "rasmus_today";
-$password = "9Nah5fEsDTayJ5doJVaXuAb6";
-$dbname = "rasmus_today";
+include_once(__DIR__."/../Functions/commonFunctions.php");
+include_once(__DIR__."/../Functions/accountFunctions.php");
+checkIfLoggedIn();
+include_once(__DIR__."/../Functions/boardFunctions.php");
 
-//convert strings to int
+//convert strings to int and get player color
 $x = intval($_POST["x"]);
 $y = intval($_POST["y"]);
-$color = intval($_POST["color"]);
+$matchIndex = intval($_POST["matchID"]);
+$color = getPlayerColor($matchIndex);
 
 //Check that parameters is correct
 if(!isset($x) or !isset($y) or !isset($color)){
-	$result["error"] = "error: Missing parameters";
-	echo json_encode($result);
+	er("Missing parameters in placeStone.php");
 	exit();
 }
 //Check that parameters has correct values
 if(!($x>=0 && $x<=18 && $y>=0 && $y<=18 && $color>=0 && $color<=1)){
-	$result["error"] = "error: Invalid parameters";
-	echo json_encode($result);
+	er("Invalid parameters in placeStone.php $x(" . $x . ") $y(" . $y . ") $color(" . $color . ")");
 	exit();
 }
+
 //Conect to database
-$conn = mysqli_connect($servername, $username, $password, $dbname);
-if(!$conn){
-	$result["error"] = "error: Database connection error --- " . $conn.error;
-	echo json_encode($result);
+$conn = dbCon();
+if(!$conn)
 	exit();
-}
+
 //Read gamestate from database
-$query = "SELECT * FROM currentGame";
-$gameState = $conn->query($query);
-if($conn->errno){
-	$result["error"] = "error: Could not select from database --- " . $query . " --- " . $conn->error;
-	echo json_encode($result);
-	exit();
-}
-$board = getBoardExistingCon($conn);
+$board = getBoardExistingCon($conn, $matchIndex);
 if(array_key_exists("error", $board)){
-	$result["error"] = board["error"];
-	mysqli_close($conn);
-	echo json_encode($result);
-	exit();
-}
-//Check is spot is taken
-if($board["board"][$x][$y] != 2){
-	$result["info"] = "info: spot taken";
-	mysqli_close($conn);
-	echo json_encode($result);
+	er("Error when getting board in placeStone.php");
 	exit();
 }
 //Check if it is the colors turn
-if($board["lastColor"] != $color && validColor($board["board"], $color)){
-}
-elseif($board["lastColor"] == $color && !validColor($board["board"], 1-$color) && validColor($board["board"], $color)){
-}
 if($board["lastColor"] == $color){
-	$result["info"] = "info: not your turn";
-	mysqli_close($conn);
+	$result["info"] = "It´s not your turn";
 	echo json_encode($result);
 	exit();
 }
-//Check if the placed stone is surrounded
-if(!validSquare($board["board"], $x, $y, $color)){
-	$result["info"] = "info: you may not surround yourself";
-	mysqli_close($conn);
+//Check if the placed stone is on a valid square
+if(!validSquare($board["board"], $board["oldBoard"], $x, $y, $color)){
+	$result["info"] = "Invalid placement";
+	$result["boards"] = $board;
 	echo json_encode($result);
 	exit();
 }
 //Insert new move into database
-$query = "INSERT INTO currentGame (x, y, color, moveIndex) VALUES (" . $x . ", " . $y . ", " . $color . ", " . $board["currMove"] . ")";
-if(!$conn->query($query)){
-	$result["error"] = "error: Could not insert query --- " . $query . " --- " . $conn->error;
-	mysqli_close($conn);
-	echo json_encode($result);
+$action = 1;
+$stmt = ps($conn, "INSERT INTO `tableName` (`x`, `y`, `action`, `moveIndex`, `matchIndex`) VALUES (?,?,?,?,?)", "currentGames");
+$stmt->bind_param("iiiii", $x, $y, $action, $board["currMove"], $matchIndex);
+if(!$stmt->execute()){
+	er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `INSERT INTO `currentGames` (`x`, `y`, `action`, `moveIndex`, `matchIndex`) VALUES (?,?,?,?)`");
 	exit();
 }
-$result["info"] = "info: move added";
+$stmt->close();
+$result["info"] = "Stone added";
+$result["x"] = $x;
+$result["y"] = $y;
 echo json_encode($result);
-mysqli_close($conn);
+$conn->close();
 ?>
