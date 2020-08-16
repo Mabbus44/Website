@@ -4,6 +4,8 @@ include_once(__DIR__."/../Functions/accountFunctions.php");
 checkIfLoggedIn();
 include_once(__DIR__."/../Functions/boardFunctions.php");
 
+if(DEBUG_INFO)
+	er("passTurn.php");
 //convert strings to int and get player color
 $matchIndex = intval($_POST["matchID"]);
 $color = getPlayerColor($matchIndex);

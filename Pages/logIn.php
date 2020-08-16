@@ -1,18 +1,29 @@
+<?php
+	session_start();
+	include_once(__DIR__."/../Functions/accountFunctions.php");
+?>
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Go</title>
+		<link rel="stylesheet" type="text/css" href="../Css/main.css">
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="../Js/changeLanguage.js"></script>
+		<title><?php dict("Go")?></title>
 	</head>
 	<body>
-		<form action="../Functions/logIn.php" method="post">
-			<label for="username"><b>Username</b></label>
-			<input type="text" placeholder="Enter Username" name="username" required>
-			<label for="password"><b>Password</b></label>
-			<input type="password" placeholder="Enter Password" name="password" required>
-			<button type="submit">Login</button>
-		</form>
-		<form action="../Pages/createAccount.php" method="post">
-			<button type="submit">Create account</button>
-		</form>
+		<?php topPanel()?>
+		<div class="contentDiv">
+			<h1><?php dict("Log in")?></h1>
+			<hr class="h1Line">
+			<form action="../Functions/logIn.php" method="post">
+				<input type="text" placeholder="<?php dict("Enter Username")?>" name="username" required>
+				<input type="password" placeholder="<?php dict("Enter Password")?>" name="password" required>
+				<button type="submit"><?php dict("Log in")?></button>
+			</form>
+			<hr>
+			<form action="../Pages/createAccount.php">
+				<button type="submit"><?php dict("Create account")?></button>
+			</form>
+		</div>
 	</body>
 </html>

@@ -1,0 +1,215 @@
+/*General settings*/
+body {
+  background-color: #F5F5F5;
+  height: 100%;
+  margin: 0;
+}
+
+label {
+  color: black;
+  font-size: 20px;
+}
+
+h1 {
+    color: #404A88;
+    text-align: center;
+    font-size: 30px;
+    margin: 2px;
+}
+
+input {
+  width: 300px;
+  color: black;
+  font-size: 20px;
+  margin: 10px 20px;
+}
+
+button {
+    height: 30px;
+    width: 300px;
+    font-size: 14px;
+    margin: 10px 20px;
+    background-image: linear-gradient(#376B90, #1E4B70);
+    color: white;
+}
+
+button:hover {
+    background-image: linear-gradient(#4586B2, #286596);
+    cursor: pointer;
+}
+
+select {
+    margin: 10px 20px;
+}
+
+hr {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    border-top: 1px dotted grey;
+    width: 100%;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/*Class settings*/
+.contentDiv {
+    width: 949px;
+    margin: auto;
+    margin-top: 20px;
+    padding-top: 0px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: white;
+    box-shadow: 0px 0px 10px 3px #CCCCCC;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.h1Line {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+}
+
+.pairOfElements {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.firstOfPair {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.secondOfPair {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.bottomAlignedColumn {
+	display: flex;
+	height: 570px;
+	flex-direction: column;
+	justify-content: flex-end;
+}
+
+.bottomAlignedColumn * {
+	margin-top: 10px;
+	margin-bottom: 0px;
+	text-align: center;
+}
+
+/*Element specific settings*/
+/*Top board*/
+#topPanel {
+    background-color: #DAC558;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#topCenterPanel {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 989px;
+    margin: auto;
+}
+
+#goIconButton {
+	background: url(../Graphics/goIcon46x46.png) no-repeat;
+	border: none;
+    background-color: #DAC558;
+	height: 48px;
+	width: 200px;
+	font-size: 30px;
+	text-align: left;
+	padding: 0px 50px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-right: 0px;
+	margin-left: 0px;
+}
+
+#goIconButtonForm {
+	width: auto;
+	padding: 0px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-right: auto;
+	margin-left: 0px;
+}
+
+#enLangButton {
+	background: url(../Graphics/ukFlag64x32.png) no-repeat;
+	border: 1px solid #000000;
+	width: 66px;
+	height: 34px;
+	margin: 10px 10px;
+}
+
+#chLangButton {
+	background: url(../Graphics/chFlag64x32.png) no-repeat;
+	border: 1px solid #000000;
+	width: 66px;
+	height: 34px;
+	margin: 10px 10px;
+}
+
+/*Board.php*/
+#canvasDiv {
+	position: relative;
+	display: inline-block;
+	float: left;
+}
+
+#canvasMessageDiv {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  border: 3px solid green;
+  background: lightYellow;
+  padding: 5px 5px;
+  left: 285px;
+  top: 285px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  display: none;
+}
+
+#canvasButtonsDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#canvasButtonsDiv * {
+  width: auto;
+  margin: 5px;
+  display: none;
+}
+
+#canvasLabel {
+  text-align: center;
+  font-size: 18px;
+}

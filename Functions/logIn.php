@@ -1,6 +1,9 @@
 <?php
 include_once(__DIR__."/../Functions/commonFunctions.php");
+include_once(__DIR__."/../Functions/accountFunctions.php");
 session_start();
+if(DEBUG_INFO)
+	er("logIn.php");
 
 //Conect to database
 $conn = dbCon();
@@ -18,7 +21,7 @@ if(!$stmt->execute()){
 }
 $dbResult = $stmt->get_result();
 if($dbResult->num_rows == 0){
-	exit("Username does not exist");
+	exit(dictRet("Username does not exist"));
 }
 if($dbResult->num_rows > 1){
 	er("Multiple users with the same name found in logIn.php");
@@ -32,7 +35,7 @@ $enc_iv = hex2bin($enc_iv);
 $hashedPassword = openssl_decrypt($hashedPassword, "aes-128-ctr", pepper(), 0, $enc_iv);
 if(!password_verify($postPassword, $hashedPassword)){
 	unsetSession("username");
-	exit("Wrong password");
+	exit(dictRet("Wrong password"));
 }
 $stmt->close();
 $conn->close();

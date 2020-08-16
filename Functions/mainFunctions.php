@@ -2,25 +2,27 @@
 include_once(__DIR__."/../Functions/commonFunctions.php");
 include_once(__DIR__."/../Functions/accountFunctions.php");
 
-function listOfChallanges(){
+function listOfChallenges(){
+	if(DEBUG_INFO)
+		er("listOfChallenges()");
 	//Conect to database
 	$conn = dbCon();
 	if(!$conn)
 		exit();
 
 	//Get users from database
-	$stmt = ps($conn, "SELECT `user1ID` FROM `tableName` WHERE `user2ID` = ?", "challanges");
+	$stmt = ps($conn, "SELECT `user1ID` FROM `tableName` WHERE `user2ID` = ?", "challenges");
 	$sessionID = getSession("id");
 	$stmt->bind_param("i", $sessionID);
 	if(!$stmt->execute()){
-	er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `SELECT `user1ID` FROM `challanges` WHERE `user2ID` = ?`");
+	er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `SELECT `user1ID` FROM `challenges` WHERE `user2ID` = ?`");
 		exit();
 	}
 	
-	//Create challanger name list
+	//Create challenger name list
 	$result = $stmt->get_result();
 	$stmt->close();
-	echo "<select size=\"" . $result->num_rows . "\" name=\"challangerName\" id=\"challangerName\" onchange=\"setSelect2(this.selectedIndex)\">";
+	echo "<select size=\"" . $result->num_rows . "\" name=\"challengerName\" id=\"challengerName\" onchange=\"setSelect2(this.selectedIndex)\">";
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 			echo "<option>" . getNameFromID($row["user1ID"]) . "</option>";
@@ -28,9 +30,9 @@ function listOfChallanges(){
 	}
 	echo "</select>";
 
-	//Create challanger id list
+	//Create challenger id list
 	$result->data_seek(0);
-	echo "<select size=\"" . $result->num_rows . "\" name=\"challangerID\" id=\"challangerID\" onchange=\"setSelect2(this.selectedIndex)\">";
+	echo "<select size=\"" . $result->num_rows . "\" name=\"challengerID\" id=\"challengerID\" onchange=\"setSelect2(this.selectedIndex)\" required style=\"display: none\">";
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 			echo "<option>" . $row["user1ID"] . "</option>";
@@ -41,6 +43,8 @@ function listOfChallanges(){
 }
 
 function listOfMatches(){
+	if(DEBUG_INFO)
+		er("listOfMatches()");
 	//Conect to database
 	$conn = dbCon();
 	if(!$conn)
@@ -72,7 +76,7 @@ function listOfMatches(){
 
 	//Create match id list
 	$result->data_seek(0);
-	echo "<select size=\"" . $result->num_rows . "\" id=\"matchID\"  onchange=\"setSelect(this.selectedIndex)\">";
+	echo "<select size=\"" . $result->num_rows . "\" id=\"matchID\"  onchange=\"setSelect(this.selectedIndex)\" style=\"display: none\">";
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 			echo "<option>" . $row["matchIndex"] . "</option>";

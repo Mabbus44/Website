@@ -4,12 +4,16 @@ include_once(__DIR__."/../Functions/accountFunctions.php");
 
 //Get player color
 function getPlayerColor($gameID){
+	if(DEBUG_INFO)
+		er("getPlayerColor()");
 	$result = getPlayerColorAndID($gameID);
 	return $result["color"];
 }
 
 //Get player color and IDs
 function getPlayerColorAndID($gameID){
+	if(DEBUG_INFO)
+		er("getPlayerColorAndID()");
 	$result["color"] = 2;
 	$result["id1"] = -1;
 	$result["id2"] = -1;
@@ -53,6 +57,8 @@ function getPlayerColorAndID($gameID){
 
 //Get surrounded area
 function getSurroundedArea(&$board, $x, $y){
+	if(DEBUG_INFO)
+		er("getSurroundedArea()");
 	$result["area"] = [];
 	$result["color"] = 2;
 	$result["surrounded"] = False;
@@ -119,6 +125,8 @@ function getSurroundedArea(&$board, $x, $y){
 //Capture surrounded areas
 function countPoints($matchIndex)
 {
+	if(DEBUG_INFO)
+		er("countPoints()");
 	$board = getBoard($matchIndex);
 	$board = $board["board"];
 	$points = [];
@@ -134,9 +142,6 @@ function countPoints($matchIndex)
 					}
 				}
 				else{
-					if($x == 0 && $y == 0){
-						er(json_encode($area));
-					}
 					for($i=0; $i<count($area["area"]); $i++){
 						$board[$area["area"][$i][0]][$area["area"][$i][1]] = 3;
 					}
@@ -153,6 +158,8 @@ function countPoints($matchIndex)
 
 //Get surrounded stones
 function getSurroundedStones(&$board, $x, $y, $color){
+	if(DEBUG_INFO)
+		er("getSurroundedStones(".$x.", ".$y.", ".$color.")");
 	$capStones = [];
 	if($x>=0 && $x<19 && $y>=0 && $y<19){
 		if($board[$x][$y] == $color){
@@ -213,6 +220,8 @@ function getSurroundedStones(&$board, $x, $y, $color){
 //Capture surrounded stones
 function captureStones(&$board, $x, $y, $color)
 {
+	if(DEBUG_INFO)
+		er("captureStones()");
 	for($i=0; $i<4; $i++){
 		if($i==0){
 			$tX = $x-1;
@@ -242,6 +251,8 @@ function captureStones(&$board, $x, $y, $color)
 
 //Checks if square is a valid move
 function validSquare($board, $oldBoard, $x, $y, $color){
+	if(DEBUG_INFO)
+		er("validSquare(".$x.", ".$y.", ".$color.")");
 	//Check if square is taken
 	if($board[$x][$y] != 2){
 		return false;
@@ -253,9 +264,9 @@ function validSquare($board, $oldBoard, $x, $y, $color){
 
 	//Check for board repetition
 	$ans = false;
-	for($x = 0; $x < 19; $x++){
-		for($y = 0; $y < 19; $y++){
-			if($board[$x][$y] != $oldBoard[$x][$y]){
+	for($x2 = 0; $x2 < 19; $x2++){
+		for($y2 = 0; $y2 < 19; $y2++){
+			if($board[$x2][$y2] != $oldBoard[$x2][$y2]){
 				$ans = true;
 			}
 		}
@@ -271,6 +282,8 @@ function validSquare($board, $oldBoard, $x, $y, $color){
 
 //Gets board with existing connection
 function getBoardExistingCon($conn, $matchIndex){
+	if(DEBUG_INFO)
+		er("getBoardExistingCon()");
 	if(!$conn){
 		return $result;
 	}
@@ -321,6 +334,8 @@ function getBoardExistingCon($conn, $matchIndex){
 
 //Gets board from database
 function getBoard($matchIndex){
+	if(DEBUG_INFO)
+		er("getBoard()");
 	//Conect to database
 	$conn = dbCon();
 	if(!$conn)
@@ -334,6 +349,8 @@ function getBoard($matchIndex){
 
 //Gets move from database
 function getMove($matchIndex, $moveIndex){
+	//if(DEBUG_INFO)
+		//er("getMove()");
 	//Conect to database
 	$conn = dbCon();
 	if(!$conn)
@@ -362,6 +379,8 @@ function getMove($matchIndex, $moveIndex){
 
 //End game
 function endGame($matchIndex, $endCauseVal){
+	if(DEBUG_INFO)
+		er("endGame()");
 	$colorAndId = getPlayerColorAndID($matchIndex);
 	$color = $colorAndId["color"];
 
@@ -436,6 +455,8 @@ function endGame($matchIndex, $endCauseVal){
 
 //Get match results
 function getMatchResults($matchIndex){
+	//if(DEBUG_INFO)
+		//er("getMatchResults()");
 	//Conect to database
 	$conn = dbCon();
 	if(!$conn)
@@ -470,4 +491,40 @@ function getMatchResults($matchIndex){
 	return $result;
 }
 
+//Gets all moves of a match
+function getAllMoves($matchIndex){
+	if(DEBUG_INFO)
+		er("getAllMoves()");
+	//Conect to database
+	$conn = dbCon();
+	if(!$conn)
+		exit();
+
+	//Read moves from database
+	$stmt = ps($conn, "SELECT `x`, `y`, `action`, `moveIndex` FROM `tableName` WHERE `matchIndex` = ? ORDER BY `moveIndex` ASC", "currentGames");
+	$stmt->bind_param("i", $matchIndex);
+	if(!$stmt->execute()){
+		er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `SELECT `x`, `y`, `action`, `moveIndex` FROM `currentGames` WHERE `matchIndex` = ? ORDER BY `moveIndex` ASC`");
+		exit();
+	}
+	
+	//Build bord from moves and return board
+	$moves = $stmt->get_result();
+	$stmt->close();
+	$rowNum = 0;
+	$result["moves"] = array();
+	$result["currMove"] = $moves->num_rows;
+	$result["lastColor"] = 1-($moves->num_rows % 2);
+	$result["lastAction"] = "playStone";
+	if($moves->num_rows > 0) {
+		while($row = $moves->fetch_assoc()) {
+			if($rowNum == $moves->num_rows-1)
+				$result["lastAction"] = $row["action"];
+			$result["moves"][$rowNum] = $row;
+			$rowNum = $rowNum + 1;
+		}
+	}
+	$conn->close();
+	return $result;
+}
 ?>

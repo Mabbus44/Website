@@ -1,6 +1,8 @@
 //Go to game
 function btnGoToGame(){
-	window.location.href = "../Pages/board.php?id=" + document.getElementById("matchID").value;
+	if(document.getElementById("matchID").value > 0){
+		window.location.href = "../Pages/board.php?id=" + document.getElementById("matchID").value;
+	}
 }
 
 //Keep selects synced
@@ -9,6 +11,6 @@ function setSelect(val){
 	document.getElementById("matchID").selectedIndex = val;
 }
 function setSelect2(val){
-	document.getElementById("challangerName").selectedIndex = val;
-	document.getElementById("challangerID").selectedIndex = val;
+	document.getElementById("challengerName").selectedIndex = val;
+	document.getElementById("challengerID").selectedIndex = val;
 }

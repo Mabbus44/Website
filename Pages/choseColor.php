@@ -7,14 +7,20 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<!--<script type="text/javascript" src="../Js/main.js"></script>-->
-		<title>Go</title>
+		<link rel="stylesheet" type="text/css" href="../Css/main.css">
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="../Js/changeLanguage.js"></script>
+		<title><?php dict("Go")?></title>
 	</head>
 	<body>
-		<label><b>Chose color</b></label>
-		<form action="../Pages/choseColor.php" method="post">
-			<button type="submit" name="black" value="1">Black</button>
-			<button type="submit" name="white" value="1">White</button>
-		</form>
+		<?php topPanel()?>
+		<div class="contentDiv">
+			<h1><?php dict("Chose color")?></h1>
+			<hr class="h1Line">
+			<form action="../Pages/choseColor.php" method="post">
+				<button type="submit" name="black" value="1"><?php dict("Black")?></button>
+				<button type="submit" name="white" value="1"><?php dict("White")?></button>
+			</form>
+		</div>
 	</body>
 </html>

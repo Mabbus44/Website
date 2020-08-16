@@ -8,6 +8,10 @@ var playerColor = 0;
 var matchIndex = 0;
 var nextMoveIndex = 0;
 var lastAction = "playStone";
+var yourTurnText = "";
+var notYourTurnText = "";
+var blockingPopup = false;
+var popupFunction = null;
 
 //Empty board
 for(var x = 0; x < 19; x++){
@@ -20,6 +24,7 @@ for(var x = 0; x < 19; x++){
 //Place stone
 function btnExecute(){
 	if(markedSquare[0] == -1){
+		showMessage("Select location");
 		return;
 	}
 	try {
@@ -30,13 +35,13 @@ function btnExecute(){
 			success: function(obj, textstatus){
 				var obj = JSON.parse(obj);
 				if("info" in obj){
-					window.alert(obj["info"]);
+					showMessage(obj["info"]);
 					if(obj["info"] == "Stone added"){
 						board[obj["x"]][obj["y"]] = playerColor;
 						captureStones(obj["x"], obj["y"], playerColor);
 						markedSquare = [-1, -1];
 						nextMoveIndex = nextMoveIndex + 1;
-						document.getElementById("yourTurn").innerHTML = "not Your turn!";
+						document.getElementById("yourTurn").innerHTML = notYourTurnText;
 						startServerPushing();
 						draw();
 					}
@@ -51,28 +56,29 @@ function btnExecute(){
 
 //Give up
 function btnGiveUp(){
-	if (!confirm('Are you sure you want to give up?')) {
-		return 0;
-	}
-	try {
-		$.ajax({
-			type: "POST",
-			url: "../Functions/giveUp.php",
-			data: {matchID: matchIndex},
-			success: function(obj, textstatus){
-				var obj = JSON.parse(obj);
-				if("info" in obj){
-					window.alert(obj["info"]);
-					if(obj["info"].includes("Game ended")){
-						window.location.href = "../Pages/main.php";
+	showMessage("Are you sure you want to give up?", "YesNo", function(){
+		try {
+			$.ajax({
+				type: "POST",
+				url: "../Functions/giveUp.php",
+				data: {matchID: matchIndex},
+				success: function(obj, textstatus){
+					var obj = JSON.parse(obj);
+					if("info" in obj){
+						if(obj["info"].includes("Game ended")){
+							showMessage(obj["info"], "Ok", function(){window.location.href = "../Pages/main.php";});
+						}
+						else{
+							showMessage(obj["info"]);
+						}
 					}
 				}
-			}
-		});
-	}
-	catch(err) {
-		window.alert(err.message);
-	}
+			});
+		}
+		catch(err) {
+			window.alert(err.message);
+		}
+	});
 }
 
 //Pass turn
@@ -85,17 +91,21 @@ function btnPass(){
 			success: function(obj, textstatus){
 				var obj = JSON.parse(obj);
 				if("info" in obj){
-					window.alert(obj["info"]);
 					if(obj["info"] == "Turn passed"){
 						markedSquare = [-1, -1];
 						nextMoveIndex = nextMoveIndex + 1;
-						document.getElementById("yourTurn").innerHTML = "not Your turn!";
+						document.getElementById("yourTurn").innerHTML = notYourTurnText;
 						lastAction = "pass";
 						startServerPushing();
 						draw();
 					}
 					if(obj["info"].includes("Game ended")){
-						window.location.href = "../Pages/main.php";
+						showMessage(obj["info"], "Ok", function(){
+							window.location.href = "../Pages/main.php";
+						});
+					}
+					else{
+						showMessage(obj["info"]);
 					}
 				}
 			}
@@ -133,16 +143,18 @@ function canvasClick(evt)
 function draw(){
 	var c = document.getElementById("goCanvas");
 	var ctx = c.getContext("2d");
-	c.width = boardSize*squareSize;
-	c.height = boardSize*squareSize;
 
 	//Draw board
 	ctx.fillStyle = "#DFC156";
+	ctx.beginPath();
 	ctx.fillRect(0,0,boardSize*squareSize,boardSize*squareSize);
+
 	for (var i=0; i<boardSize; i++){
+		ctx.beginPath();
 		ctx.moveTo(0.5*squareSize, (i+0.5)*squareSize);
 		ctx.lineTo((boardSize-0.5)*squareSize, (i+0.5)*squareSize);
 		ctx.stroke();
+		ctx.beginPath();
 		ctx.moveTo((i+0.5)*squareSize, 0.5*squareSize);
 		ctx.lineTo((i+0.5)*squareSize, (boardSize-0.5)*squareSize);
 		ctx.stroke();
@@ -179,23 +191,38 @@ function draw(){
 
 //Loads board from database
 function loadBoard(){
-	var url = "../Functions/getBoard.php?matchIndex=" + matchIndex;
+	var url = "../Functions/getAllMoves.php?matchIndex=" + matchIndex;
 	try{
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function(obj, info, textstatus){
 				var obj = JSON.parse(obj);
-				board = obj["board"];
+				var moves = obj["moves"];
+				//Empty board
+				for(var x = 0; x < 19; x++){
+						for(var y = 0; y < 19; y++){ 
+								board[x][y] = 2;
+						}    
+				}
+				//Build board
+				if(moves.length > 0) {
+					for(var moveID=0; moveID<moves.length; moveID++){
+						if(moves[moveID]["action"] == "playStone") {
+							board[moves[moveID]["x"]][moves[moveID]["y"]] = moveID % 2;
+							captureStones(moves[moveID]["x"], moves[moveID]["y"], moveID % 2);
+						}
+					}
+				}
 				lastColor = obj["lastColor"];
 				nextMoveIndex = obj["currMove"];
 				lastAction = obj["lastAction"];
 				if(lastColor == 1-playerColor){
-					document.getElementById("yourTurn").innerHTML = "Your turn!";
+					document.getElementById("yourTurn").innerHTML = yourTurnText;
 				}
 				else{
 					startServerPushing();
-					document.getElementById("yourTurn").innerHTML = "not Your turn!";
+					document.getElementById("yourTurn").innerHTML = notYourTurnText;
 				}
 				draw();
 			}
@@ -219,21 +246,22 @@ function mouseToBoard(x, y){
 
 //Start server pushing
 function startServerPushing(){
-	document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Server pushing started";
+	//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Server pushing started, matchIndex = " + matchIndex + ", moveIndex = " + nextMoveIndex;
 	var source = new EventSource("../Functions/getMove.php?matchIndex=" + matchIndex + "&moveIndex=" + nextMoveIndex);
 	source.onmessage = function(event) {
 		var data = JSON.parse(event.data);
-		document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SEE Message: " + JSON.stringify(data);
+		//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SEE Message: " + JSON.stringify(data);
 		source.close();
 		//Check if we got match results or next move
 		if("winner" in data){
+			var msg = "";
 			if(data["endCause"] == "pass"){
-				window.alert("Game ended. " + $data["winner"] + " won. Score: " + $data["points1"] + "-" + $data["points2"]);
+				msg = "Game ended. " + $data["winner"] + " won. Score: " + $data["points1"] + "-" + $data["points2"];
 			}
 			if(data["endCause"] == "surrender"){
-				window.alert($data["winner"] + " won since oponent gave up");
+				msg = $data["winner"] + " won since oponent gave up";
 			}
-			window.location.href = "../Pages/main.php";
+			showMessage(msg, "Ok", function(){window.location.href = "../Pages/main.php";});
 		}
 		else{
 			if(data["moveIndex"] == nextMoveIndex){
@@ -248,19 +276,17 @@ function startServerPushing(){
 					var source2 = new EventSource("../Functions/getMatchResult.php?matchIndex=" + matchIndex);
 					source2.onmessage = function(event2) {
 						var data2 = JSON.parse(event2.data);
-						document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Match result: " + JSON.stringify(data2);
+						//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Match result: " + JSON.stringify(data2);
 						source2.close();
-						window.alert("Game ended. " + data2["winner"] + " won. Score: " + data2["points1"] + "-" + data2["points2"]);
-						window.location.href = "../Pages/main.php";
+						showMessage("Game ended. " + data2["winnerName"] + " won. Score: " + data2["points1"] + "-" + data2["points2"], "Ok", function(){window.location.href = "../Pages/main.php";});
 					};
 				}
 				//If oponent surrendered, game ended
 				if(data["action"] == "giveUp"){
-					window.alert("You won since oponent gave up");
-					window.location.href = "../Pages/main.php";
+					showMessage("You won since oponent gave up", "Ok", function(){window.location.href = "../Pages/main.php";});
 				}
 				nextMoveIndex = nextMoveIndex + 1;
-				document.getElementById("yourTurn").innerHTML = "Your turn!";
+				document.getElementById("yourTurn").innerHTML = yourTurnText;
 				draw();
 			}
 		}
@@ -360,4 +386,71 @@ function captureStones(x, y, color)
 		}
 	}
 	return;
+}
+
+//Show messages on canvasLabel
+function showMessage(msg, timeOrString=3000, func=null)
+{
+	if(blockingPopup){
+		return;
+	}
+	document.getElementById("canvasMessageDiv").style.display = "inline";
+	document.getElementById("canvasLabel").innerHTML = msg;
+	if(timeOrString == "Ok"){
+		document.getElementById("canvasOkButton").style.display = "inline";
+		blockingPopup = true;
+		popupFunction = func;
+	}	else if(timeOrString == "YesNo"){
+		document.getElementById("canvasYesButton").style.display = "inline";
+		document.getElementById("canvasNoButton").style.display = "inline";
+		blockingPopup = true;
+		popupFunction = func;
+	}	else {
+		setTimeout(
+			function(){
+				if(blockingPopup){
+					return;
+				}
+				document.getElementById("canvasMessageDiv").style.display = "none";
+				document.getElementById("canvasLabel").innerHTML="";
+			},timeOrString);
+	}
+}
+
+//Button yes is clicked
+function btnYes()
+{
+	document.getElementById("canvasMessageDiv").style.display = "none";
+	document.getElementById("canvasOkButton").style.display = "none";
+	document.getElementById("canvasYesButton").style.display = "none";
+	document.getElementById("canvasNoButton").style.display = "none";
+	document.getElementById("canvasLabel").innerHTML="";
+	blockingPopup = false;
+	popupFunction();
+	popupFunction = null;
+}
+
+//Button no is clicked
+function btnNo()
+{
+	document.getElementById("canvasMessageDiv").style.display = "none";
+	document.getElementById("canvasOkButton").style.display = "none";
+	document.getElementById("canvasYesButton").style.display = "none";
+	document.getElementById("canvasNoButton").style.display = "none";
+	document.getElementById("canvasLabel").innerHTML="";
+	blockingPopup = false;
+	popupFunction = null;
+}
+
+//Button ok is clicked
+function btnOk()
+{
+	document.getElementById("canvasMessageDiv").style.display = "none";
+	document.getElementById("canvasOkButton").style.display = "none";
+	document.getElementById("canvasYesButton").style.display = "none";
+	document.getElementById("canvasNoButton").style.display = "none";
+	document.getElementById("canvasLabel").innerHTML="";
+	blockingPopup = false;
+	popupFunction();
+	popupFunction = null;
 }

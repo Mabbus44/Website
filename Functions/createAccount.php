@@ -1,8 +1,11 @@
 <?php
 include_once(__DIR__."/../Functions/commonFunctions.php");
+include_once(__DIR__."/../Functions/accountFunctions.php");
 
 session_start();
 
+if(DEBUG_INFO)
+	er("createAccount.php");
 //Conect to database
 $conn = dbCon();
 if(!$conn)
@@ -10,13 +13,19 @@ if(!$conn)
 
 //Check if usename is valid
 if(!preg_match("/^[\\p{L}0-9_-]{2,255}$/u", $_POST["username"])) {
-	exit("Invalid username (at least 2 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)");
+	exit(dictRet("Invalid username (at least 2 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)"));
 }
 
 //Check if password is valid
 if(!preg_match("/^[\\p{L}0-9_-]{3,255}$/u", $_POST["password"])){
-	exit("Invalid password (at least 3 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)");
+	exit(dictRet("Invalid password (at least 3 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)"));
 }
+
+//Check if passwords match
+if($_POST["password"] != $_POST["password2"]){
+	exit(dictRet("Passwords dont match"));
+}
+
 //Add salt, encrypt, add pepper
 $hashedPassword = password_hash($_POST["password"], PASSWORD_DEFAULT);
 $enc_iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length("aes-128-ctr"));
@@ -28,7 +37,7 @@ $stmt = ps($conn, "INSERT INTO `tableName` (username, password) VALUES (?, ?)", 
 $stmt->bind_param("ss", $postUsername, $pepperedPassword);
 if(!$stmt->execute()){
 	er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `INSERT INTO `credentials` (username, password) VALUES (?, ?)`");
-	exit();
+	exit(dictRet("Username already exist"));
 }
 $stmt->close();
 

@@ -2,14 +2,16 @@
 include_once(__DIR__."/../Functions/commonFunctions.php");
 
 function handlePost(){
+	if(DEBUG_INFO)
+		er("handlePost()");
 	if($_POST){
-		//Save challanges id and reload
-		if($_POST["challangerID"]){
-			setSession("challangerID", $_POST["challangerID"]);
+		//Save challenges id and reload
+		if($_POST["challengerID"]){
+			setSession("challengerID", $_POST["challengerID"]);
 			header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/choseColor.php");
 		}
 		//If color was chosen, start game
-		if(getSession("challangerID") and ($_POST["black"] or $_POST["white"])){
+		if(getSession("challengerID") and ($_POST["black"] or $_POST["white"])){
 			$isWhite = false;
 			if($_POST["black"]){
 				setSession("color", "black");
@@ -24,32 +26,32 @@ function handlePost(){
 			if(!$conn)
 				exit();
 
-			//Get challanges from database
-			$stmt = ps($conn, "SELECT `user1ID`, `user2ID` FROM `tableName` WHERE `user2ID` = ?", "challanges");
+			//Get challenges from database
+			$stmt = ps($conn, "SELECT `user1ID`, `user2ID` FROM `tableName` WHERE `user2ID` = ?", "challenges");
 			$sessionID = getSession("id");
 			$stmt->bind_param("i", $sessionID);
 			if(!$stmt->execute()){
-				er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `SELECT `user1ID`, `user2ID` FROM `challanges` WHERE `user2ID` = ?`");
+				er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `SELECT `user1ID`, `user2ID` FROM `challenges` WHERE `user2ID` = ?`");
 				exit();
 			}
-			$challanges = $stmt->get_result();
+			$challenges = $stmt->get_result();
 			$stmt->close();
 			
-			//Reload page if no challange found
-			if($challanges->num_rows < 1){
-				er("No challanged found in function handlePost in choseColorFunctions.php");
+			//Reload page if no challenge found
+			if($challenges->num_rows < 1){
+				er("No challenged found in function handlePost in choseColorFunctions.php");
 				header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/main.php");
 				return 0;
 			}
 			
-			//Delete challange
+			//Delete challenge
 			$ID1 = 0;
 			$ID2 = 0;
-			while($row = $challanges->fetch_assoc()){
-				if($row["user1ID"] == getSession("challangerID")){
-					$stmt = ps($conn, "DELETE FROM `tableName` WHERE `user1ID` = " . $row["user1ID"] . " AND `user2ID` = " . $row["user2ID"], "challanges");
+			while($row = $challenges->fetch_assoc()){
+				if($row["user1ID"] == getSession("challengerID")){
+					$stmt = ps($conn, "DELETE FROM `tableName` WHERE `user1ID` = " . $row["user1ID"] . " AND `user2ID` = " . $row["user2ID"], "challenges");
 					if(!$stmt->execute()){
-						er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `DELETE FROM `challanges` WHERE `user1ID` = " . $row["user1ID"] . " AND `user2ID` = " . $row["user2ID"] . "`");
+						er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `DELETE FROM `challenges` WHERE `user1ID` = " . $row["user1ID"] . " AND `user2ID` = " . $row["user2ID"] . "`");
 						exit();
 					}
 					$ID1 = $row["user1ID"];
@@ -58,9 +60,9 @@ function handlePost(){
 			}
 			$stmt->close();
 			
-			//Reload page if challange not found
+			//Reload page if challenge not found
 			if($ID1 == 0){
-				er("No challanged found 2 in function handlePost in choseColorFunctions.php");
+				er("No challenged found 2 in function handlePost in choseColorFunctions.php");
 				header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/main.php");
 				return 0;
 			}
@@ -102,8 +104,8 @@ function handlePost(){
 			$matchIndex = $row["matchIndex"];
 			
 			//clear session variables;
-			if(getSession("challangerID")){
-				unsetSession("challangerID");
+			if(getSession("challengerID")){
+				unsetSession("challengerID");
 			}
 			if(getSession("color")){
 				unsetSession("color");

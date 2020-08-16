@@ -3,6 +3,9 @@ include_once(__DIR__."/../Functions/commonFunctions.php");
 include_once(__DIR__."/../Functions/accountFunctions.php");
 checkIfLoggedIn();
 include_once(__DIR__."/../Functions/boardFunctions.php");
+if(DEBUG_INFO)
+	er("placeStone.php");
+
 
 //convert strings to int and get player color
 $x = intval($_POST["x"]);
@@ -40,11 +43,13 @@ if($board["lastColor"] == $color){
 }
 //Check if the placed stone is on a valid square
 if(!validSquare($board["board"], $board["oldBoard"], $x, $y, $color)){
+	er("ValidSquare = False");
 	$result["info"] = "Invalid placement";
 	$result["boards"] = $board;
 	echo json_encode($result);
 	exit();
 }
+er("ValidSquare = True");
 //Insert new move into database
 $action = 1;
 $stmt = ps($conn, "INSERT INTO `tableName` (`x`, `y`, `action`, `moveIndex`, `matchIndex`) VALUES (?,?,?,?,?)", "currentGames");

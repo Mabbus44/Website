@@ -1,5 +1,7 @@
 <?php
 include_once(__DIR__."/../Functions/commonFunctions.php");
+if(DEBUG_INFO)
+	er("getDatabase.php");
 
 //Conect to database
 $conn = dbCon();

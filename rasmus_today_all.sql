@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: rasmus.today.mysql.service.one.com:3306
--- Generation Time: Jul 26, 2020 at 06:07 PM
+-- Generation Time: Aug 09, 2020 at 08:27 PM
 -- Server version: 10.3.23-MariaDB-1:10.3.23+maria~bionic
 -- PHP Version: 7.2.24-0ubuntu0.18.04.6
 
@@ -38,10 +38,10 @@ CREATE TABLE `archivedGames` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `challanges`
+-- Table structure for table `challenges`
 --
 
-CREATE TABLE `challanges` (
+CREATE TABLE `challenges` (
   `user1ID` int(11) NOT NULL,
   `user2ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -89,10 +89,10 @@ CREATE TABLE `DEBUG_archivedGames` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `DEBUG_challanges`
+-- Table structure for table `DEBUG_challenges`
 --
 
-CREATE TABLE `DEBUG_challanges` (
+CREATE TABLE `DEBUG_challenges` (
   `user1ID` int(11) NOT NULL,
   `user2ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
