@@ -10,6 +10,8 @@ var nextMoveIndex = 0;
 var lastAction = "playStone";
 var yourTurnText = "";
 var notYourTurnText = "";
+var selectLocationText = "";
+var areYouSureYouWantToGiveUpText = "";
 var blockingPopup = false;
 var popupFunction = null;
 
@@ -23,8 +25,11 @@ for(var x = 0; x < 19; x++){
 
 //Place stone
 function btnExecute(){
+	if(blockingPopup){
+		return;
+	}
 	if(markedSquare[0] == -1){
-		showMessage("Select location");
+		showMessage(selectLocationText);
 		return;
 	}
 	try {
@@ -36,7 +41,7 @@ function btnExecute(){
 				var obj = JSON.parse(obj);
 				if("info" in obj){
 					showMessage(obj["info"]);
-					if(obj["info"] == "Stone added"){
+					if("action" in obj && obj["action"] == "Stone added"){
 						board[obj["x"]][obj["y"]] = playerColor;
 						captureStones(obj["x"], obj["y"], playerColor);
 						markedSquare = [-1, -1];
@@ -56,7 +61,10 @@ function btnExecute(){
 
 //Give up
 function btnGiveUp(){
-	showMessage("Are you sure you want to give up?", "YesNo", function(){
+	if(blockingPopup){
+		return;
+	}
+	showMessage(areYouSureYouWantToGiveUpText, "YesNo", function(){
 		try {
 			$.ajax({
 				type: "POST",
@@ -65,7 +73,7 @@ function btnGiveUp(){
 				success: function(obj, textstatus){
 					var obj = JSON.parse(obj);
 					if("info" in obj){
-						if(obj["info"].includes("Game ended")){
+						if("action" in obj && obj["action"] == "game ended"){
 							showMessage(obj["info"], "Ok", function(){window.location.href = "../Pages/main.php";});
 						}
 						else{
@@ -83,6 +91,9 @@ function btnGiveUp(){
 
 //Pass turn
 function btnPass(){
+	if(blockingPopup){
+		return;
+	}
 	try {
 		$.ajax({
 			type: "POST",
@@ -91,7 +102,7 @@ function btnPass(){
 			success: function(obj, textstatus){
 				var obj = JSON.parse(obj);
 				if("info" in obj){
-					if(obj["info"] == "Turn passed"){
+					if("action" in obj && obj["action"] == "turn passed"){
 						markedSquare = [-1, -1];
 						nextMoveIndex = nextMoveIndex + 1;
 						document.getElementById("yourTurn").innerHTML = notYourTurnText;
@@ -99,7 +110,7 @@ function btnPass(){
 						startServerPushing();
 						draw();
 					}
-					if(obj["info"].includes("Game ended")){
+					if("action" in obj && obj["action"] == "game ended"){
 						showMessage(obj["info"], "Ok", function(){
 							window.location.href = "../Pages/main.php";
 						});
@@ -119,6 +130,9 @@ function btnPass(){
 //Handle clicks on the canvas
 function canvasClick(evt)
 {
+	if(blockingPopup){
+		return;
+	}
 	var canvas = document.getElementById("goCanvas");
 	var rect = canvas.getBoundingClientRect();
 	var mousePos = [evt.clientX - rect.left, evt.clientY - rect.top];
@@ -246,22 +260,15 @@ function mouseToBoard(x, y){
 
 //Start server pushing
 function startServerPushing(){
-	//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Server pushing started, matchIndex = " + matchIndex + ", moveIndex = " + nextMoveIndex;
+	document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Server pushing started, matchIndex = " + matchIndex + ", moveIndex = " + nextMoveIndex;
 	var source = new EventSource("../Functions/getMove.php?matchIndex=" + matchIndex + "&moveIndex=" + nextMoveIndex);
 	source.onmessage = function(event) {
 		var data = JSON.parse(event.data);
-		//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SEE Message: " + JSON.stringify(data);
+		document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SEE Message: " + JSON.stringify(data);
 		source.close();
 		//Check if we got match results or next move
 		if("winner" in data){
-			var msg = "";
-			if(data["endCause"] == "pass"){
-				msg = "Game ended. " + $data["winner"] + " won. Score: " + $data["points1"] + "-" + $data["points2"];
-			}
-			if(data["endCause"] == "surrender"){
-				msg = $data["winner"] + " won since oponent gave up";
-			}
-			showMessage(msg, "Ok", function(){window.location.href = "../Pages/main.php";});
+			showMessage(data["info"], "Ok", function(){window.location.href = "../Pages/main.php";});
 		}
 		else{
 			if(data["moveIndex"] == nextMoveIndex){
@@ -271,25 +278,36 @@ function startServerPushing(){
 					captureStones(data["x"], data["y"], 1-playerColor);
 					markedSquare = [-1, -1];
 				}
-				//If oponent passed and you passed last turn, get game results
-				if(data["action"] == "pass" && lastAction == "pass"){
+				//If oponent passed and you passed last turn or if oponent surrendered, get game results
+				if((data["action"] == "pass" && lastAction == "pass") || data["action"] == "giveUp"){
 					var source2 = new EventSource("../Functions/getMatchResult.php?matchIndex=" + matchIndex);
 					source2.onmessage = function(event2) {
 						var data2 = JSON.parse(event2.data);
-						//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Match result: " + JSON.stringify(data2);
+						document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Match result: " + JSON.stringify(data2);
 						source2.close();
-						showMessage("Game ended. " + data2["winnerName"] + " won. Score: " + data2["points1"] + "-" + data2["points2"], "Ok", function(){window.location.href = "../Pages/main.php";});
+						showMessage(data2["info"], "Ok", function(){window.location.href = "../Pages/main.php";});
 					};
-				}
-				//If oponent surrendered, game ended
-				if(data["action"] == "giveUp"){
-					showMessage("You won since oponent gave up", "Ok", function(){window.location.href = "../Pages/main.php";});
 				}
 				nextMoveIndex = nextMoveIndex + 1;
 				document.getElementById("yourTurn").innerHTML = yourTurnText;
 				draw();
 			}
 		}
+	};
+	source.onerror = function(event) {
+		console.error("SSE error", event);
+		document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SSE Error: " + JSON.stringify(event);
+		switch (event.target.readyState) {
+			case EventSource.CONNECTING:
+				console.log('Reconnecting...');
+				break;
+			case EventSource.CLOSED:
+				console.log('Connection failed, will not reconnect');
+				break;
+		}
+	};
+	source.onopen = function(event) {
+		document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SSE Open: " + event;
 	};
 }
 

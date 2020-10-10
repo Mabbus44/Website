@@ -6,7 +6,7 @@ Tried to pass and if failed with error below:
 * Sometimes gets "cannot connect to database" error, might just be one´s database not responding thou
 
 Features
-* Translate messages returned from php files and generated in js files
+* Use long polling instead of SSE
 
 Future versions
 * Ipad support
@@ -58,6 +58,8 @@ New features
 * Make buttons responsive when you hover mouse over them
 * Dont quit match before user has clicked ok
 * Enter password twice when creating account
+* Translate messages returned from php files and generated in js files
+* Move function login and register.php to their page conterparts and use popups instead of exit
 
 Bugs fixed
 * You can place stones at surrounded squares

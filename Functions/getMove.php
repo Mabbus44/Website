@@ -4,6 +4,7 @@
 	include_once(__DIR__."/../Functions/boardFunctions.php");
 	header('Content-Type: text/event-stream');
 	header('Cache-Control: no-cache');
+	session_start();
 	if(DEBUG_INFO)
 		er("getMove.php");
 
@@ -25,5 +26,6 @@
 				flush();
 			}
 		}
+		sleep(3);
 	}while(!$done);
 ?>

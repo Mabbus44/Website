@@ -36,7 +36,7 @@ if(array_key_exists("error", $board)){
 
 //Check if it is the colors turn
 if($board["lastColor"] == $color){
-	$result["info"] = "It´s not your turn";
+	$result["info"] = dictRet("It´s not your turn");
 	echo json_encode($result);
 	exit();
 }
@@ -69,13 +69,15 @@ if($action->num_rows == 1) {
 			er("Function endGame returned error in passTurn.php");
 			exit();
 		}
-		$result["info"] = "Game ended. " . $result["winner"] . " won. Score: " . $result["points1"] . "-" . $result["points2"];
+		$result["info"] = dictRet("Score winner", [$result["player1Name"], $result["player2Name"], $result["points1"], $result["points2"], $result["winnerName"]]);
+		$result["action"] = "game ended";
 		echo json_encode($result);
 		exit();
 	}
 }
 
-$result["info"] = "Turn passed";
+$result["info"] = dictRet("Turn passed");
+$result["action"] = "turn passed";
 echo json_encode($result);
 $conn->close();
 ?>

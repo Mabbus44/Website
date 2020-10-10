@@ -18,6 +18,9 @@
 		<div class="contentDiv">
 			<h1><?php dict("Challenge players")?></h1>
 			<hr class="h1Line">
+			<form action="../Pages/main.php">
+				<button type="submit"><?php dict("Main")?></button>
+			</form>
 			<form action="../Pages/challenge.php" method="post">
 				<div class="pairOfElements">
 					<div class="firstOfPair"><input type="text" id="filterString" name="filterString"></div>

@@ -37,14 +37,14 @@ if(array_key_exists("error", $board)){
 }
 //Check if it is the colors turn
 if($board["lastColor"] == $color){
-	$result["info"] = "It´s not your turn";
+	$result["info"] = dictRet("It´s not your turn");
 	echo json_encode($result);
 	exit();
 }
 //Check if the placed stone is on a valid square
 if(!validSquare($board["board"], $board["oldBoard"], $x, $y, $color)){
 	er("ValidSquare = False");
-	$result["info"] = "Invalid placement";
+	$result["info"] = dictRet("Invalid placement");
 	$result["boards"] = $board;
 	echo json_encode($result);
 	exit();
@@ -59,9 +59,10 @@ if(!$stmt->execute()){
 	exit();
 }
 $stmt->close();
-$result["info"] = "Stone added";
+$result["info"] = dictRet("Stone added");
 $result["x"] = $x;
 $result["y"] = $y;
+$result["action"] = "Stone added";
 echo json_encode($result);
 $conn->close();
 ?>

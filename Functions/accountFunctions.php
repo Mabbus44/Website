@@ -41,7 +41,7 @@ function getNameFromID($id){
 function topPanel(){
 	echo "<div id=\"topPanel\">";
 	echo	 "<div id=\"topCenterPanel\">";
-	echo		 "<form action=\"../Pages/main.php\">";
+	echo		 "<form id=\"goIconButtonForm\" action=\"../Pages/main.php\">";
 	echo		 	 "<button type=\"submit\" id=\"goIconButton\">".dictRet("Go")."</button>";
 	echo		 "</form>";
 	echo		 "<button id=\"enLangButton\" type=\"button\" onclick=\"changeLanguage(0)\"></button>";

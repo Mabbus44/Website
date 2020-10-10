@@ -1,6 +1,8 @@
 <?php
 	session_start();
 	include_once(__DIR__."/../Functions/accountFunctions.php");
+	include_once(__DIR__."/../Functions/createAccount.php");
+	createAccount();
 ?>
 <!DOCTYPE html>
 <html>
@@ -15,7 +17,7 @@
 		<div class="contentDiv">
 			<h1><?php dict("Create account")?></h1>
 			<hr class="h1Line">
-			<form action="../Functions/createAccount.php" method="post">
+			<form action="../Pages/createAccount.php" method="post">
 				<input type="text" placeholder="<?php dict("Enter Username")?>" name="username" required>
 				<input type="password" placeholder="<?php dict("Enter Password")?>" name="password" required>
 				<input type="password" placeholder="<?php dict("Repeat Password")?>" name="password2" required>

@@ -23,9 +23,9 @@
 					<div id="canvasMessageDiv">
 						<label id="canvasLabel"></label>
 						<div id="canvasButtonsDiv">
-							<button onclick="btnYes()" id="canvasYesButton">Yes</button>
-							<button onclick="btnNo()" id="canvasNoButton">No</button>
-							<button onclick="btnOk()" id="canvasOkButton">Ok</button>
+							<button onclick="btnYes()" id="canvasYesButton"><?php dict("Yes")?></button>
+							<button onclick="btnNo()" id="canvasNoButton"><?php dict("No")?></button>
+							<button onclick="btnOk()" id="canvasOkButton"><?php dict("Ok")?></button>
 						</div>
 					</div>
 				</div>
@@ -43,6 +43,8 @@
 				playerColor = <?php echo getPlayerColor($_REQUEST["id"]); ?>;
 				yourTurnText = "<?php dict("Your turn")?>";
 				notYourTurnText = "<?php dict("Not your turn")?>";
+				selectLocationText = "<?php dict("Select location")?>";
+				areYouSureYouWantToGiveUpText = "<?php dict("Are you sure you want to give up?")?>";
 				loadBoard();
 			</script>
 		</div>

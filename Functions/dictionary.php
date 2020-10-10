@@ -1,6 +1,6 @@
 <?php
 	//Dictionary with all text presented on the website
-	function dictRet($keyStr){
+	function dictRet($keyStr, $arr = NULL){
 		session_start();
 		if(issetSession("language")){
 			$lang = getSession("language");
@@ -10,53 +10,50 @@
 		}
 		$words = array (
 			"English" 								=> array("English",									"中文"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Main" 										=> array("Main",										"主要"),
-			"Challenge" 							=> array("Challenge",								"挑战"),
-			"Challenge players" 			=> array("Challenge players",				"挑战玩家"),
-			"Accept challenge" 				=> array("Accept challenge",				"接受挑战"),
-			"Log out" 								=> array("Log out",									"登出"),
-			"Go to game" 							=> array("Go to game",							"去游戏"),
-			"Username" 								=> array("Username",								"用户名"),
-			"Password" 								=> array("Password",								"密码"),
-			"Log in" 									=> array("Log in",									"登录"),
-			"Create account" 					=> array("Create account",					"创建帐号"),
-			"Filter" 									=> array("Filter",									"过滤"),
-			"Remove challenge" 				=> array("Remove challenge",				"消除挑战"),
-			"Profile" 								=> array("Profile",									"个人资料"),
-			"Replay" 									=> array("Replay",									"重播"),
-			"Give up" 								=> array("Give up",									"放弃"),
-			"Pass" 										=> array("Pass",										"通过"),
-			"Confirm" 								=> array("Confirm",									"确认"),
-			"Your turn" 							=> array("Your turn",								"轮到你"),
-			"Not your turn" 					=> array("Not your turn",						"轮到你了"),
-			"Enter Username" 					=> array("Enter Username",					"输入用户名"),
-			"Enter Password" 					=> array("Enter Password",					"输入密码"),
-			"Chose color" 						=> array("Chose color",							"选择颜色"),
-			"Black" 									=> array("Black",										"黑色"),
-			"White" 									=> array("White",										"白色"),
-			"Board" 									=> array("Board",										"板"),
-			"Repeat Password" 				=> array("Repeat Password",					"重复输入密码"),
-			"Invalid username (at least 2 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)" 											=> array("Invalid username (at least 2 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)",											"用户名无效（至少2个字符。允许的字符：任何字母字符，数字0-9，特殊字符-和_）"),
-			"Invalid password (at least 3 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)" 											=> array("Invalid password (at least 3 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)",											"无效的密码（至少3个字符。允许的字符：任何字母字符，数字0-9，特殊字符-和_）"),
-			"Passwords dont match" 		=> array("Passwords dont match",		"密码不匹配"),
-			"Username already exist"  => array("Username already exist",	"用户名已存在"),
-			"Username does not exist" 											=> array("Username does not exist",											"用户名不存在"),
-			"Wrong password" 											=> array("Wrong password",											"密码错误"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
-			"Go" 											=> array("Go",											"围棋"),
+			"Go" 											=> array("Go",											"-"),
+			"Main" 										=> array("Main",										"-"),
+			"Challenge" 							=> array("Challenge",								"-"),
+			"Challenge players" 			=> array("Challenge players",				"-"),
+			"Accept challenge" 				=> array("Accept challenge",				"-"),
+			"Log out" 								=> array("Log out",									"-"),
+			"Go to game" 							=> array("Go to game",							"-"),
+			"Username" 								=> array("Username",								"-"),
+			"Password" 								=> array("Password",								"-"),
+			"Log in" 									=> array("Log in",									"-"),
+			"Create account" 					=> array("Create account",					"-"),
+			"Filter" 									=> array("Filter",									"-"),
+			"Remove challenge" 				=> array("Remove challenge",				"-"),
+			"Profile" 								=> array("Profile",									"-"),
+			"Replay" 									=> array("Replay",									"-"),
+			"Give up" 								=> array("Give up",									"-"),
+			"Pass" 										=> array("Pass",										"-"),
+			"Confirm" 								=> array("Confirm",									"-"),
+			"Your turn" 							=> array("Your turn",								"-"),
+			"Not your turn" 					=> array("Not your turn",						"-"),
+			"Enter Username" 					=> array("Enter Username",					"-"),
+			"Enter Password" 					=> array("Enter Password",					"-"),
+			"Chose color" 						=> array("Chose color",							"-"),
+			"Black" 									=> array("Black",										"-"),
+			"White" 									=> array("White",										"-"),
+			"Board" 									=> array("Board",										"-"),
+			"Repeat Password" 				=> array("Repeat Password",					"-"),
+			"Invalid username (at least 2 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)" 											=> array("Invalid username (at least 2 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)",											"-"),
+			"Invalid password (at least 3 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)" 											=> array("Invalid password (at least 3 characters. Allowed characters: any alphabetic characters, numbers 0-9, speial characters - and _)",											"-"),
+			"Passwords dont match" 		=> array("Passwords dont match",		"-"),
+			"Username already exist"  => array("Username already exist",	"-"),
+			"Username does not exist" => array("Username does not exist",	"-"),
+			"Wrong password" 					=> array("Wrong password",					"-"),
+			"Score winner" 						=> array($arr[0] . "-" . $arr[1] . " score: " . $arr[2] . "-" . $arr[3] . ". Winner: " . $arr[4],			$arr[0] . "-" . $arr[1] . " -: " . $arr[2] . "-" . $arr[3] . ". -: " . $arr[4]),
+			"Surrender winner" 				=> array($arr[0] . " surrendered. Winner: " . $arr[1],		$arr[0] . " -. -: " . $arr[1]),
+			"It´s not your turn" 			=> array("It´s not your turn",			"-"),
+			"Invalid placement" 			=> array("Invalid placement",				"-"),
+			"Stone added" 						=> array("Stone added",							"-"),
+			"Turn passed" 						=> array("Turn passed",							"-"),
+			"Yes" 										=> array("Yes",											"-"),
+			"No" 											=> array("No",											"-"),
+			"Ok" 											=> array("Ok",											"-"),
+			"Are you sure you want to give up?" 											=> array("Are you sure you want to give up?",											"-？"),
+			"Select location" 				=> array("Select location",					"-")
 		);
 		if(array_key_exists($keyStr, $words)){
 			return $words[$keyStr][$lang];
@@ -66,7 +63,7 @@
 		}
 	}
 
-	function dict($keyStr){
-		echo dictRet($keyStr);
+	function dict($keyStr, $arr = NULL){
+		echo dictRet($keyStr, $arr);
 	}
 ?>

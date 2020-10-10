@@ -36,7 +36,7 @@ if(array_key_exists("error", $board)){
 
 //Check if it is the colors turn
 if($board["lastColor"] == $color){
-	$result["info"] = "info: not your turn";
+	$result["info"] = dictRet("It´s not your turn");
 	echo json_encode($result);
 	exit();
 }
@@ -54,6 +54,7 @@ $stmt->close();
 //End game
 $result = endGame($matchIndex, 2);
 $conn->close();
-$result["info"] = "Game ended. " . $result["winner"] . " won since oponent gave up";
+$result["info"] = dictRet("Surrender winner", [$result["loserName"], $result["winnerName"]]);
+$result["action"] = "game ended";
 echo json_encode($result);
 ?>

@@ -1,6 +1,8 @@
 <?php
 	session_start();
 	include_once(__DIR__."/../Functions/accountFunctions.php");
+	include_once(__DIR__."/../Functions/logIn.php");
+	logIn();
 ?>
 <!DOCTYPE html>
 <html>
@@ -15,7 +17,7 @@
 		<div class="contentDiv">
 			<h1><?php dict("Log in")?></h1>
 			<hr class="h1Line">
-			<form action="../Functions/logIn.php" method="post">
+			<form action="../Pages/logIn.php" method="post">
 				<input type="text" placeholder="<?php dict("Enter Username")?>" name="username" required>
 				<input type="password" placeholder="<?php dict("Enter Password")?>" name="password" required>
 				<button type="submit"><?php dict("Log in")?></button>

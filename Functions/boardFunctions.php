@@ -349,8 +349,8 @@ function getBoard($matchIndex){
 
 //Gets move from database
 function getMove($matchIndex, $moveIndex){
-	//if(DEBUG_INFO)
-		//er("getMove()");
+	if(DEBUG_INFO)
+		er("getMove()");
 	//Conect to database
 	$conn = dbCon();
 	if(!$conn)
@@ -399,24 +399,31 @@ function endGame($matchIndex, $endCauseVal){
 		$points2 = $points[1];
 		if($points[0] > $points[1]){
 			$winnerID = $colorAndId["id1"];
+			$loserID = $colorAndId["id2"];
 		}
 		else{
 			$winnerID = $colorAndId["id2"];
+			$loserID = $colorAndId["id1"];
 		}
 	}
 	elseif($endCauseVal == 2){
 		if($color == 0){
 			$winnerID = $colorAndId["id2"];
+			$loserID = $colorAndId["id1"];
 		}
 		else{
 			$winnerID = $colorAndId["id1"];
+			$loserID = $colorAndId["id2"];
 		}
 	}
 	else{
 		er("Invalid $endCauseVal (" . $endCauseVal . ") in endGame");
 		exit();
 	}
-	$result["winner"] = getNameFromID($winnerID);
+	$result["winnerName"] = getNameFromID($winnerID);
+	$result["loserName"] = getNameFromID($loserID);
+	$result["player1Name"] = getNameFromID($colorAndId["id1"]);
+	$result["player2Name"] = getNameFromID($colorAndId["id2"]);
 	$result["points1"] = $points1;
 	$result["points2"] = $points2;
 
@@ -455,8 +462,8 @@ function endGame($matchIndex, $endCauseVal){
 
 //Get match results
 function getMatchResults($matchIndex){
-	//if(DEBUG_INFO)
-		//er("getMatchResults()");
+	if(DEBUG_INFO)
+		er("getMatchResults()");
 	//Conect to database
 	$conn = dbCon();
 	if(!$conn)
@@ -487,6 +494,18 @@ function getMatchResults($matchIndex){
 		$result["player1Name"] = getNameFromID($result["player1ID"]);
 		$result["player2Name"] = getNameFromID($result["player2ID"]);
 		$result["winnerName"] = getNameFromID($result["winner"]);
+		if($result["winner"] == $result["player1ID"]){
+			$result["loserName"] = getNameFromID($result["player2ID"]);
+		}
+		else{
+			$result["loserName"] = getNameFromID($result["player1ID"]);
+		}
+		if($result["endCause"] == "pass"){
+			$result["info"] = dictRet("Score winner", [$result["player1Name"], $result["player2Name"], $result["points1"], $result["points2"], $result["winnerName"]]);
+		}
+		if($result["endCause"] == "surrender"){
+			$result["info"] = dictRet("Surrender winner", [$result["loserName"], $result["winnerName"]]);
+		}
 	}
 	return $result;
 }
