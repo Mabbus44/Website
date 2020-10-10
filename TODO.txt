@@ -1,19 +1,41 @@
-Bugs
-* Changing tabs and minimizing seems to mess upp SSE, sometimes dont work otherwise also (got error on bothes windows at the same time:
-"getMove.php:1 GET http://rasmus.today/Debug/Functions/getMove.php?matchIndex=27&moveIndex=0 503 (Backend fetch failed)"
-Tried to pass and if failed with error below:
-"POST http://rasmus.today/Debug/Functions/passTurn.php net::ERR_NETWORK_CHANGED"
-* Sometimes gets "cannot connect to database" error, might just be one´s database not responding thou
-
-Features
+Features for next version
 * Use long polling instead of SSE
 
-Future versions
+features for comming versions
 * Ipad support
 * Preview score
 * Match history in profile
 * View replay
 * Remove dead stones in scoring
+
+Known bugs
+* Changing tabs and minimizing seems to mess upp SSE, sometimes dont work otherwise also (got error on both windows at the same time:
+"getMove.php:1 GET http://rasmus.today/Debug/Functions/getMove.php?matchIndex=27&moveIndex=0 503 (Backend fetch failed)"
+Tried to pass and if failed with error below:
+"POST http://rasmus.today/Debug/Functions/passTurn.php net::ERR_NETWORK_CHANGED"
+* Sometimes gets "cannot connect to database" error, might just be one´s database not responding thou
+
+V 1.01
+New features
+* Get all the moves instead of the actual board to the clients (to reduce server load)
+* Panels instead of popups in board.php
+* Add css
+* Hide match id and player id scrollboxes
+* Limit lenght of player lists, make them filterable
+* Add languages
+* Make a proper UI
+* Replace log in button with log out button if logged in
+* Add "logged in as ..." text next to logg out when logged in
+* Link GO logo to main page
+* Make buttons responsive when you hover mouse over them
+* Dont quit match before user has clicked ok
+* Enter password twice when creating account
+* Translate messages returned from php files and generated in js files
+* Move function login and register.php to their page conterparts and use popups instead of exit
+
+Fixed bugs
+* You can place stones at surrounded squares
+* You can accept Challenge without chosing a Challenge, and go to game without chosing game
 
 V 1.00
 New features
@@ -45,22 +67,3 @@ New features
 * Quit match when its over
 * Username and password policy
 * Let players Challenge players after their current game has ended (bugg prevents that now)
-* Get all the moves instead of the actual board to the clients (to reduce server load)
-* Panels instead of popups in board.php
-* Add css
-* Hide match id and player id scrollboxes
-* Limit lenght of player lists, make them filterable
-* Add languages
-* Make a proper UI
-* Replace log in button with log out button if logged in
-* Add "logged in as ..." text next to logg out when logged in
-* Link GO logo to main page
-* Make buttons responsive when you hover mouse over them
-* Dont quit match before user has clicked ok
-* Enter password twice when creating account
-* Translate messages returned from php files and generated in js files
-* Move function login and register.php to their page conterparts and use popups instead of exit
-
-Bugs fixed
-* You can place stones at surrounded squares
-* You can accept Challenge without chosing a Challenge, and go to game without chosing game
