@@ -9,11 +9,12 @@
 		er("getMove.php");
 
 	$done = false;
+	$startTime = time();
 	do{
 		$move = getMove($_REQUEST["matchIndex"], $_REQUEST["moveIndex"]);
 		if($move != -1){
 			$done = true;
-      echo "data: " . json_encode($move) . "\n\n";
+			echo "data: " . json_encode($move) . "\n\n";
 			ob_flush();
 			flush();
 		}
@@ -26,6 +27,11 @@
 				flush();
 			}
 		}
-		sleep(3);
+		if(time() - $startTime > 20){
+			$done = true;
+		}
+		if(!$done){
+			sleep(3);
+		}
 	}while(!$done);
 ?>
