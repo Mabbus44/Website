@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
 -- Host: rasmus.today.mysql.service.one.com:3306
--- Generation Time: Aug 09, 2020 at 08:28 PM
--- Server version: 10.3.23-MariaDB-1:10.3.23+maria~bionic
--- PHP Version: 7.2.24-0ubuntu0.18.04.6
+-- Generation Time: Oct 21, 2020 at 05:41 PM
+-- Server version: 10.3.25-MariaDB-1:10.3.25+maria~bionic
+-- PHP Version: 7.2.24-0ubuntu0.18.04.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -107,7 +107,8 @@ CREATE TABLE `DEBUG_matchList` (
 -- Indexes for table `DEBUG_credentials`
 --
 ALTER TABLE `DEBUG_credentials`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Indexes for table `DEBUG_matchList`
