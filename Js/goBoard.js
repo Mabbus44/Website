@@ -14,6 +14,29 @@ var selectLocationText = "";
 var areYouSureYouWantToGiveUpText = "";
 var blockingPopup = false;
 var popupFunction = null;
+var tabInFocus = true;
+
+//Flash title class
+var tabNotification = {
+    Vars:{
+				originalTitle: document.title,
+        interval: null
+    },    
+    On: function(notification, intervalSpeed){
+        var _this = this;
+        _this.Vars.interval = setInterval(function(){document.title = (_this.Vars.originalTitle == document.title) ? notification : _this.Vars.originalTitle;}, (intervalSpeed) ? intervalSpeed : 1000);
+    },
+    Off: function(){
+        clearInterval(this.Vars.interval);
+        document.title = this.Vars.originalTitle;   
+    }
+}
+
+//Remove message when tab gains focus and keep track of if the tab is in focus
+$(window).focus(function() {	tabNotification.Off();
+															tabInFocus = true;});
+
+$(window).blur(function() {		tabInFocus = false;});
 
 //Empty board
 for(var x = 0; x < 19; x++){
@@ -260,11 +283,11 @@ function mouseToBoard(x, y){
 
 //Start server pushing
 function startServerPushing(){
-	document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Server pushing started, matchIndex = " + matchIndex + ", moveIndex = " + nextMoveIndex;
+	//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Server pushing started, matchIndex = " + matchIndex + ", moveIndex = " + nextMoveIndex;
 	var source = new EventSource("../Functions/getMove.php?matchIndex=" + matchIndex + "&moveIndex=" + nextMoveIndex);
 	source.onmessage = function(event) {
 		var data = JSON.parse(event.data);
-		document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SEE Message: " + JSON.stringify(data);
+		//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SEE Message: " + JSON.stringify(data);
 		source.close();
 		//Check if we got match results or next move
 		if("winner" in data){
@@ -283,20 +306,23 @@ function startServerPushing(){
 					var source2 = new EventSource("../Functions/getMatchResult.php?matchIndex=" + matchIndex);
 					source2.onmessage = function(event2) {
 						var data2 = JSON.parse(event2.data);
-						document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Match result: " + JSON.stringify(data2);
+						//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> Match result: " + JSON.stringify(data2);
 						source2.close();
 						showMessage(data2["info"], "Ok", function(){window.location.href = "../Pages/main.php";});
 					};
 				}
 				nextMoveIndex = nextMoveIndex + 1;
 				document.getElementById("yourTurn").innerHTML = yourTurnText;
+				if(!tabInFocus){
+					tabNotification.On("Your turn!");
+				}
 				draw();
 			}
 		}
 	};
 	source.onerror = function(event) {
 		console.error("SSE error", event);
-		document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SSE Error: " + JSON.stringify(event);
+		//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SSE Error: " + JSON.stringify(event);
 		switch (event.target.readyState) {
 			case EventSource.CONNECTING:
 				console.log('Reconnecting...');
@@ -307,7 +333,7 @@ function startServerPushing(){
 		}
 	};
 	source.onopen = function(event) {
-		document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SSE Open: " + event;
+		//document.getElementById("dbg").innerHTML = document.getElementById("dbg").innerHTML + "<br> SSE Open: " + event;
 	};
 }
 

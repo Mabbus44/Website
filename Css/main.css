@@ -213,3 +213,9 @@ form {
   text-align: center;
   font-size: 18px;
 }
+
+/*Main.php*/
+#changelogLink {
+	margin-left: auto;
+	margin-right: 0px
+}

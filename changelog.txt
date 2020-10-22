@@ -1,13 +1,6 @@
-features for comming versions
-* Allow smaller board sizes
-* Ipad support
-* Preview score
-* Match history in profile
-* View replay
-* Remove dead stones in scoring
-
-Known bugs
-* Sometimes gets "cannot connect to database" error, might just be one´s database not responding thou
+V 1.02
+* Display version and changelog somewhere
+* Flashing tab when its your turn
 
 V 1.01
 New features
@@ -62,3 +55,21 @@ New features
 * Quit match when its over
 * Username and password policy
 * Let players Challenge players after their current game has ended (bugg prevents that now)
+
+
+features for comming versions
+* Display more clearly when it is your turn on board.php
+* Mark games in main menu where it is your turn
+* Display oponent name and your color on board screen
+* Auto fill username and autologin
+* Allow smaller board sizes
+* Ipad support
+* Chinese language
+* Update main page automatically
+* Preview score
+* Match history in profile
+* View replay
+* Remove dead stones in scoring
+
+Known bugs
+* Sometimes gets "cannot connect to database" error, might just be one´s database not responding thou

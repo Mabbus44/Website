@@ -48,7 +48,7 @@ function topPanel(){
 	echo		 "<button id=\"chLangButton\" type=\"button\" onclick=\"changeLanguage(1)\"></button>";
 	if(issetSession("username")){
 		echo		 "<div class=\"column\">";
-		echo			 "<a href=\"../Pages/profile.php\">".getSession("username")."</label>";
+		echo			 "<a href=\"../Pages/profile.php\">".getSession("username")."</a>";
 		echo			 "<a href=\"../Functions/logOut.php\">".dictRet("Log out")."</a>";
 		echo		 "</div>";
 	}

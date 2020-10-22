@@ -6,11 +6,11 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<title><?php dict("Go")?></title>
 		<link rel="stylesheet" type="text/css" href="../Css/main.css">
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript" src="../Js/changeLanguage.js"></script>
 		<script type="text/javascript" src="../Js/goBoard.js"></script>
-		<title><?php dict("Go")?></title>
 	</head>
 	<body>
 		<?php topPanel()?>
