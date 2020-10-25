@@ -378,7 +378,7 @@ function getSurroundedStones(x, y, color){
 					if(board[cX][cY] == color){
 						unique = true;
 						for(i2=0; i2<capStonesSize && unique; i2++){
-							if(capStones[i2] == [cX, cY]){
+							if(arraysEqual(capStones[i2], [cX, cY])){
 								unique = false;
 							}
 						}
@@ -497,4 +497,15 @@ function btnOk()
 	blockingPopup = false;
 	popupFunction();
 	popupFunction = null;
+}
+
+//Check if arrays are equal
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length !== b.length) return false;
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }
