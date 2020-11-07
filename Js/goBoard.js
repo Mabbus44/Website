@@ -2,9 +2,10 @@
 var boardSize = 19;
 var squareSize = 30;
 var markedSquare = [-1, -1];
+var lastPlacedStone = [-1, -1];
 var board = [];
 var lastColor = 0;
-var playerColor = 0;
+var playerColor = 2;
 var matchIndex = 0;
 var nextMoveIndex = 0;
 var lastAction = "playStone";
@@ -67,6 +68,7 @@ function btnExecute(){
 					if("action" in obj && obj["action"] == "Stone added"){
 						board[obj["x"]][obj["y"]] = playerColor;
 						captureStones(obj["x"], obj["y"], playerColor);
+						lastPlacedStone = [obj["x"], obj["y"]];
 						markedSquare = [-1, -1];
 						nextMoveIndex = nextMoveIndex + 1;
 						document.getElementById("yourTurn").innerHTML = notYourTurnText;
@@ -185,6 +187,8 @@ function draw(){
 	ctx.fillStyle = "#DFC156";
 	ctx.beginPath();
 	ctx.fillRect(0,0,boardSize*squareSize,boardSize*squareSize);
+	ctx.strokeStyle = "#000000";
+	ctx.lineWidth = 1;
 
 	for (var i=0; i<boardSize; i++){
 		ctx.beginPath();
@@ -211,12 +215,19 @@ function draw(){
 					ctx.beginPath();
 					ctx.arc((x+0.5)*squareSize, (y+0.5)*squareSize, squareSize*0.4, 0, 2 * Math.PI);
 					ctx.fill();
-					ctx.fillStyle = "#000000";
+					ctx.strokeStyle = "#000000";
 					ctx.beginPath();
 					ctx.arc((x+0.5)*squareSize, (y+0.5)*squareSize, squareSize*0.4, 0, 2 * Math.PI);
 					ctx.stroke();
 			}
 		}
+	}
+	if(lastPlacedStone[0] > -1){
+		ctx.strokeStyle = "#FFFF00";
+		ctx.lineWidth = 2;
+		ctx.beginPath();
+		ctx.arc((lastPlacedStone[0]+0.5)*squareSize, (lastPlacedStone[1]+0.5)*squareSize, squareSize*0.4+1, 0, 2 * Math.PI);
+		ctx.stroke();
 	}
 	if(markedSquare[0] > -1){
 		ctx.fillStyle = "#FF0000";
@@ -229,6 +240,7 @@ function draw(){
 //Loads board from database
 function loadBoard(){
 	var url = "../Functions/getAllMoves.php?matchIndex=" + matchIndex;
+	lastPlacedStone = [-1, -1];
 	try{
 		$.ajax({
 			type: "GET",
@@ -246,6 +258,9 @@ function loadBoard(){
 				if(moves.length > 0) {
 					for(var moveID=0; moveID<moves.length; moveID++){
 						if(moves[moveID]["action"] == "playStone") {
+							if(moveID == moves.length-1){
+								lastPlacedStone = [moves[moveID]["x"], moves[moveID]["y"]];
+							}
 							board[moves[moveID]["x"]][moves[moveID]["y"]] = moveID % 2;
 							captureStones(moves[moveID]["x"], moves[moveID]["y"], moveID % 2);
 						}
@@ -297,9 +312,11 @@ function startServerPushing(){
 			if(data["moveIndex"] == nextMoveIndex){
 				//If oponent played a stone, add it to the board
 				if(data["action"] == "playStone"){
-					board[data["x"]][data["y"]] = 1-playerColor;
-					captureStones(data["x"], data["y"], 1-playerColor);
+					var placedColor = data["moveIndex"] % 2;
+					board[data["x"]][data["y"]] = placedColor;
+					captureStones(data["x"], data["y"], placedColor);
 					markedSquare = [-1, -1];
+					lastPlacedStone = [data["x"], data["y"]];
 				}
 				//If oponent passed and you passed last turn or if oponent surrendered, get game results
 				if((data["action"] == "pass" && lastAction == "pass") || data["action"] == "giveUp"){
