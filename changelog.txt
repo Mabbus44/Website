@@ -1,4 +1,8 @@
-v 1.03
+V 1.04
+* Mark games in main menu where it is your turn
+* Display oponent name and your color on board screen
+
+V 1.03
 * Mark last played stone
 
 V 1.02
@@ -61,18 +65,17 @@ New features
 
 
 features for comming versions
-* Display more clearly when it is your turn on board.php
-* Mark games in main menu where it is your turn
-* Display oponent name and your color on board screen
+* Preview score
+* Remove dead stones in scoring
+* Ipad support
+* Match history in profile
+* Chinese language
+
 * Auto fill username and autologin
 * Allow smaller board sizes
-* Ipad support
-* Chinese language
-* Update main page automatically
-* Preview score
-* Match history in profile
 * View replay
-* Remove dead stones in scoring
+* Update main page automatically
 
 Known bugs
 * Sometimes gets "cannot connect to database" error, might just be one´s database not responding thou
+* When switching from board page, it waits until php times out, causing a delay

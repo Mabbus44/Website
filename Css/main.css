@@ -118,6 +118,30 @@ form {
 	text-align: center;
 }
 
+.leftAlignedRow {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+   align-items: center;
+	margin-top: 10px;
+	margin-bottom: 0px;
+  margin-left: 20px;
+}
+
+.leftAlignedRow * {
+	text-align: left;
+	margin: 0px;
+  margin-right: 10px;
+}
+
+select.listWithSingleHighlight{
+	background-color: #FFFF00;
+}
+
+select.listWithHighlights option.highlighted {
+	background-color: #FFFF00;
+}
+
 /*Element specific settings*/
 /*Top board*/
 #topPanel {

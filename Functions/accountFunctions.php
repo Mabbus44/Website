@@ -38,6 +38,34 @@ function getNameFromID($id){
 	return "";
 }
 
+function getNameFromMatchID($matchID, $color){
+	if(DEBUG_INFO)
+		er("getNameFromMatchID()");
+	//Conect to database
+	$conn = dbCon();
+	if(!$conn)
+		exit();
+	//Find user ID
+	if($color == 0){
+		$stmt = ps($conn, "SELECT `username` FROM `tableName` WHERE `id` IN (SELECT `player1ID` FROM `anotherTable` WHERE `matchIndex` = ?)", "credentials", "matchList");
+	}else{
+		$stmt = ps($conn, "SELECT `username` FROM `tableName` WHERE `id` IN (SELECT `player2ID` FROM `anotherTable` WHERE `matchIndex` = ?)", "credentials", "matchList");
+	}		
+	$stmt->bind_param("i", $matchID);
+	if(!$stmt->execute()){
+		er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . "SELECT `player1ID` FROM `matchList` WHERE `matchIndex` = ?");
+		exit();
+	}
+	$result = $stmt->get_result();
+	$stmt->close();
+	if($result->num_rows > 0){
+		$row = $result->fetch_assoc();
+		return $row["username"];
+	}
+	$conn->close();
+	return "";
+}
+
 function topPanel(){
 	echo "<div id=\"topPanel\">";
 	echo	 "<div id=\"topCenterPanel\">";

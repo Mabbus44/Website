@@ -53,7 +53,8 @@
 			"No" 											=> array("No",											"-"),
 			"Ok" 											=> array("Ok",											"-"),
 			"Are you sure you want to give up?" 											=> array("Are you sure you want to give up?",											"-？"),
-			"Select location" 				=> array("Select location",					"-")
+			"Select location" 				=> array("Select location",					"-"),
+			"Preview score" 				=> array("Preview score",					"-")
 		);
 		if(array_key_exists($keyStr, $words)){
 			return $words[$keyStr][$lang];

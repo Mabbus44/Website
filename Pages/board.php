@@ -30,6 +30,17 @@
 					</div>
 				</div>
 				<div class="bottomAlignedColumn">
+					<div class="leftAlignedRow">
+						<canvas width=30 height=30 id="blackStone"></canvas>
+						<label id="blackName"><?php echo getNameFromMatchID($_REQUEST["id"], 0); ?></label>
+						<img id="blackArrow" src="../Graphics/arrow40x30.png" alt="arrow">
+					</div>
+					<div class="leftAlignedRow">
+						<canvas width=30 height=30 id="whiteStone"></canvas>
+						<label id="whiteName"><?php echo getNameFromMatchID($_REQUEST["id"], 1); ?></label>
+						<img id="whiteArrow" src="../Graphics/arrow40x30.png" alt="arrow">
+					</div>
+					<button onclick="btnPreviewScore()"><?php dict("Preview score")?></button>
 					<label id="yourTurn"></label>
 					<button onclick="btnGiveUp()"><?php dict("Give up")?></button>
 					<button onclick="btnPass()"><?php dict("Pass")?></button>
@@ -45,6 +56,22 @@
 				notYourTurnText = "<?php dict("Not your turn")?>";
 				selectLocationText = "<?php dict("Select location")?>";
 				areYouSureYouWantToGiveUpText = "<?php dict("Are you sure you want to give up?")?>";
+				var blackStoneCanvas = document.getElementById("blackStone");
+				var bctx = blackStoneCanvas.getContext("2d");
+				bctx.fillStyle = "#000000";
+				bctx.beginPath();
+				bctx.arc(0.5*squareSize, 0.5*squareSize, squareSize*0.4, 0, 2 * Math.PI);
+				bctx.fill();
+				var whiteStoneCanvas = document.getElementById("whiteStone");
+				var wctx = whiteStoneCanvas.getContext("2d");
+				wctx.fillStyle = "#FFFFFF";
+				wctx.beginPath();
+				wctx.arc(0.5*squareSize, 0.5*squareSize, squareSize*0.4, 0, 2 * Math.PI);
+				wctx.fill();
+				wctx.strokeStyle = "#000000";
+				wctx.beginPath();
+				wctx.arc(0.5*squareSize, 0.5*squareSize, squareSize*0.4, 0, 2 * Math.PI);
+				wctx.stroke();
 				loadBoard();
 			</script>
 		</div>
