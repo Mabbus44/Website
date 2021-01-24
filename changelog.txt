@@ -65,7 +65,7 @@ New features
 
 
 features for comming versions
-* Preview score
+* Preview score (check so eyes does not contain oponents safe spots)
 * Remove dead stones in scoring
 * Ipad support
 * Match history in profile

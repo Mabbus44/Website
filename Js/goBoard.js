@@ -17,7 +17,7 @@ var areYouSureYouWantToGiveUpText = "";
 var blockingPopup = false;
 var popupFunction = null;
 var tabInFocus = true;
-const stone = Object.freeze({black:0, white:1, empty:2, emptyBlack:3, emptyWhite:4, deadBlack:5, deadWhite:6});
+const stone = Object.freeze({black:0, white:1, empty:2});
 
 //Flash title class
 var tabNotification = {
@@ -164,6 +164,8 @@ function btnPreviewScore(){
 	var isSafe = false;
 	var unique = true;
 	var checkID = 0;
+	var blackScore = 0;
+	var whiteScore = 0;
 	//Copy board to scoreBoard
 	scoreBoard = [];
 	for(var x = 0; x < 19; x++){
@@ -261,22 +263,23 @@ function btnPreviewScore(){
 			}
 		}
 	}
-	//Set scoreBoard depending on stones and safe status
-	//const stone = Object.freeze({black:0, white:1, empty:2, emptyBlack:3, emptyWhite:4, deadBlack:5, deadWhite:6});
+	//Set score
 	for(var x = 0; x < 19; x++){
 		for(var y = 0; y < 19; y++){
-			if(scoreBoard[x][y].safe != stone.empty){
-				if(scoreBoard[x][y].stone == stone.empty){
-					//Empty becomes emptyBlack/emptyWhite
-					scoreBoard[x][y].stone += (scoreBoard[x][y].safe + 1);
-				} else if(scoreBoard[x][y].stone != scoreBoard[x][y].safe){
-					//Black/white becomes deadBlack/deadWhite
-					scoreBoard[x][y].stone += 5;
+			if(scoreBoard[x][y].safe == stone.black){
+				blackScore++;
+			}else if(scoreBoard[x][y].safe == stone.white){
+				whiteScore++;
+			}else{
+				if(scoreBoard[x][y].stone == stone.black){
+					blackScore++;
+				}else if(scoreBoard[x][y].stone == stone.white){
+					whiteScore++;
 				}
-			}
+			}				
 		}
 	}
-	drawScore();
+	drawScore(blackScore, whiteScore);
 }
 
 //Handle clicks on the canvas
@@ -377,10 +380,14 @@ function draw(){
 		whiteArrow.style.display = "none";
 		blackArrow.style.display = "block";
 	}
+
+	//Erase scores
+	document.getElementById("blackScore").innerHTML = "";
+	document.getElementById("whiteScore").innerHTML = "";
 }
 
 //Draw the scoreBoard
-function drawScore(){
+function drawScore(blackScore, whiteScore){
 	var c = document.getElementById("goCanvas");
 	var ctx = c.getContext("2d");
 
@@ -390,9 +397,9 @@ function drawScore(){
 			if(scoreBoard[x][y].safe == stone.empty){
 				ctx.fillStyle = "#DFC156";
 			}else if(scoreBoard[x][y].safe == stone.white){
-				ctx.fillStyle = "#BBBB";
+				ctx.fillStyle = "#BBBBBB";
 			}else if(scoreBoard[x][y].safe == stone.black){
-				ctx.fillStyle = "#4444";
+				ctx.fillStyle = "#444444";
 			}
 			ctx.beginPath();
 			ctx.fillRect(x*squareSize,y*squareSize,x*squareSize+squareSize,y*squareSize+squareSize);
@@ -416,14 +423,16 @@ function drawScore(){
 	//Draw stones
 	for (y=0; y<boardSize; y++){
 		for (x=0; x<boardSize; x++){
-			if(board[x][y] == 0){
+			if(scoreBoard[x][y].stone == stone.black){
 					ctx.fillStyle = "#000000";
+					ctx.lineWidth = 1;
 					ctx.beginPath();
 					ctx.arc((x+0.5)*squareSize, (y+0.5)*squareSize, squareSize*0.4, 0, 2 * Math.PI);
 					ctx.fill();
 			}
-			if(board[x][y] == 1){
+			if(scoreBoard[x][y].stone == stone.white){
 					ctx.fillStyle = "#FFFFFF";
+					ctx.lineWidth = 1;
 					ctx.beginPath();
 					ctx.arc((x+0.5)*squareSize, (y+0.5)*squareSize, squareSize*0.4, 0, 2 * Math.PI);
 					ctx.fill();
@@ -432,8 +441,26 @@ function drawScore(){
 					ctx.arc((x+0.5)*squareSize, (y+0.5)*squareSize, squareSize*0.4, 0, 2 * Math.PI);
 					ctx.stroke();
 			}
+			if((scoreBoard[x][y].stone == stone.black && scoreBoard[x][y].safe == stone.white) || (scoreBoard[x][y].stone == stone.white && scoreBoard[x][y].safe == stone.black)){
+				ctx.strokeStyle = "#FF0000";
+				ctx.lineWidth = 2;
+				ctx.beginPath();
+				ctx.moveTo((x+0.1)*squareSize, (y+0.1)*squareSize);
+				ctx.lineTo((x+0.9)*squareSize, (y+0.9)*squareSize);
+				ctx.moveTo((x+0.9)*squareSize, (y+0.1)*squareSize);
+				ctx.lineTo((x+0.1)*squareSize, (y+0.9)*squareSize);
+				ctx.stroke();
+			}
 		}
 	}
+
+	//Hide arrows
+	document.getElementById("whiteArrow").style.display = "none";
+	document.getElementById("blackArrow").style.display = "none";
+
+	//Write scores
+	document.getElementById("blackScore").innerHTML = "- " + blackScore;
+	document.getElementById("whiteScore").innerHTML = "- " + whiteScore;
 }
 
 //Loads board from database
@@ -567,6 +594,8 @@ function getSafeStones(x, y, color){
 	var isSafe = false;
 	var unique = true;
 	var isEye = false;
+	var cX2 = 0;
+	var cY2 = 0;
 	//Check so coordinates is inside board and right color stone is in that spot
 	if(x>=0 && x<19 && y>=0 && y<19){
 		if(scoreBoard[x][y].stone == color){
@@ -604,8 +633,8 @@ function getSafeStones(x, y, color){
 									safeStonesSize++;
 								}
 							}
-							//If empty spot and not diagonal, check for eyes (stop checking when 2 eyes are found)
-							if((iX == 0 || iY == 0) && scoreBoard[cX][cY].stone == stone.empty && eyeCount<1){
+							//If empty or oponent spot and not diagonal, check for eyes (stop checking when 2 eyes are found)
+							if((iX == 0 || iY == 0) && scoreBoard[cX][cY].stone != color && eyeCount<2){
 								unique = true;
 								for(i=0; i<eyeSquaresSize && unique; i++){
 									if(arraysEqual(eyeSquares[i], [cX, cY])){
@@ -623,23 +652,23 @@ function getSafeStones(x, y, color){
 									while(checkID2<tempEyeSquaresSize && isEye){
 										for(var i=0; i<4 && isEye; i++){
 											if(i==0){
-												cX2 = tempEyeSquares[checkID][0]-1;
-												cY2 = tempEyeSquares[checkID][1];
+												cX2 = tempEyeSquares[checkID2][0]-1;
+												cY2 = tempEyeSquares[checkID2][1];
 											}
 											if(i==1){
-												cX2 = tempEyeSquares[checkID][0];
-												cY2 = tempEyeSquares[checkID][1]-1;
+												cX2 = tempEyeSquares[checkID2][0];
+												cY2 = tempEyeSquares[checkID2][1]-1;
 											}
 											if(i==2){
-												cX2 = tempEyeSquares[checkID][0];
-												cY2 = tempEyeSquares[checkID][1]+1;
+												cX2 = tempEyeSquares[checkID2][0];
+												cY2 = tempEyeSquares[checkID2][1]+1;
 											}
 											if(i==3){
-												cX2 = tempEyeSquares[checkID][0]+1;
-												cY2 = tempEyeSquares[checkID][1];
+												cX2 = tempEyeSquares[checkID2][0]+1;
+												cY2 = tempEyeSquares[checkID2][1];
 											}
 											if(cX2>=0 && cX2<19 && cY2>=0 && cY2<19){
-												if(scoreBoard[cX2][cY2].stone == stone.empty){
+												if(scoreBoard[cX2][cY2].stone != color){
 													unique = true;
 													for(i2=0; i2<tempEyeSquaresSize && unique; i2++){
 														if(arraysEqual(tempEyeSquares[i2], [cX2, cY2])){
@@ -649,10 +678,11 @@ function getSafeStones(x, y, color){
 													if(unique){
 														tempEyeSquares[tempEyeSquaresSize] = [cX2, cY2];
 														tempEyeSquaresSize++;
+														//En eye is defined as surrounded area of maximum size 25 (may contain oponent stones)
+														if(tempEyeSquaresSize>25){
+															isEye = false;
+														}
 													}
-												}
-												if(scoreBoard[cX2][cY2].stone == 1-color){
-													isEye = false;
 												}
 											}
 										}

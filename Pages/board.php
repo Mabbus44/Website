@@ -34,11 +34,13 @@
 						<canvas width=30 height=30 id="blackStone"></canvas>
 						<label id="blackName"><?php echo getNameFromMatchID($_REQUEST["id"], 0); ?></label>
 						<img id="blackArrow" src="../Graphics/arrow40x30.png" alt="arrow">
+						<label id="blackScore"></label>
 					</div>
 					<div class="leftAlignedRow">
 						<canvas width=30 height=30 id="whiteStone"></canvas>
 						<label id="whiteName"><?php echo getNameFromMatchID($_REQUEST["id"], 1); ?></label>
 						<img id="whiteArrow" src="../Graphics/arrow40x30.png" alt="arrow">
+						<label id="whiteScore"></label>
 					</div>
 					<button onclick="btnPreviewScore()"><?php dict("Preview score")?></button>
 					<label id="yourTurn"></label>
