@@ -238,6 +238,22 @@ select.listWithHighlights option.highlighted {
   font-size: 18px;
 }
 
+#yourTurnDiv {
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-bottom: 10px;
+	margin-top: 0px;
+	background-color: #00FF00;
+	width: 300px;
+	height: 100px;
+	line-height: 100px;
+	border: 2px dashed #f69c55;
+}
+
+#yourTurn {
+	font-size: 40px;
+}
+
 /*Main.php*/
 #changelogLink {
 	margin-left: auto;

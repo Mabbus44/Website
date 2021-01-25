@@ -55,106 +55,305 @@ function getPlayerColorAndID($gameID){
 	return $result;
 }
 
-//Get surrounded area
-function getSurroundedArea(&$board, $x, $y){
+
+//Get safe stones
+function getSafeStones($x, $y, $color, &$board, &$scoreBoard){
 	if(DEBUG_INFO)
-		er("getSurroundedArea()");
-	$result["area"] = [];
-	$result["color"] = 2;
-	$result["surrounded"] = False;
-	if($x<0 || $x>18 || $y<0 || $y>18){
-		er("Invalid parameters in getSurroundedArea x(" . $x . ") y(" . $y . ")");
-		return $result;
-	}
-	if($board[$x][$y] != 2){
-		return $result;
-	}
-	$result["area"][0] = [$x, $y];
-	$result["surrounded"] = True;
-	$areaSize = 1;
+		er("getSafeStones()");
+	$safeStones = [];
+	$notEyeSquares = [];
+	$eyeSquares = [];
+	$tempEyeSquares = [];
 	$checkID = 0;
-	while($checkID<$areaSize){
-		for($i=0; $i<4; $i++){
-			if($i==0){
-				$cX = $result["area"][$checkID][0]-1;
-				$cY = $result["area"][$checkID][1];
-			}
-			if($i==1){
-				$cX = $result["area"][$checkID][0];
-				$cY = $result["area"][$checkID][1]-1;
-			}
-			if($i==2){
-				$cX = $result["area"][$checkID][0];
-				$cY = $result["area"][$checkID][1]+1;
-			}
-			if($i==3){
-				$cX = $result["area"][$checkID][0]+1;
-				$cY = $result["area"][$checkID][1];
-			}
-			if($cX>=0 && $cX<19 && $cY>=0 && $cY<19){
-				if($board[$cX][$cY] == 2){
-					$unique = true;
-					for($i2=0; $i2<$areaSize && $unique; $i2++){
-						if($result["area"][$i2] == [$cX, $cY]){
-							$unique = false;
+	$checkID2 = 0;
+	$unique = true;
+	$isEye = false;
+	$cX2 = 0;
+	$cY2 = 0;
+	//Check so coordinates is inside board and right color stone is in that spot
+	if($x>=0 && $x<19 && $y>=0 && $y<19){
+		if($board[$x][$y] == $color){
+			$safeStones = [];
+			$safeStones[0] = [$x, $y];
+		}
+		else{
+			$safeStones = [];
+		}
+		$checkID = 0;
+		//Check neighbours of all safe stones found
+		while($checkID<count($safeStones)){
+			for($iX=-1; $iX<2; $iX++){
+				for($iY=-1; $iY<2; $iY++){
+					$cX=$safeStones[$checkID][0]+$iX;
+					$cY=$safeStones[$checkID][1]+$iY;
+					//Check that neighbour is inside board, and is not itself
+					if($cX>=0 && $cX<19 && $cY>=0 && $cY<19 && !($iX==0 && $iY==0)){
+						//If it is a diagonal neighbour, check that both stones bewteen is not oponent stones
+						if($iX != 0 && $iY != 0 && $board[$cX-$iX][$cY] == 1-$color && $board[$cX][$cY-$iY] == 1-$color){
+						}
+						else{
+							//If friendly stone, expand safeStones
+							if($board[$cX][$cY] == $color){
+								$unique = true;
+								for($i=0; $i<count($safeStones) && $unique; $i++){
+									if($safeStones[$i] == [$cX, $cY]){
+										$unique = false;
+									}
+								}
+								if($unique){
+									$safeStones[count($safeStones)] = [$cX, $cY];
+								}
+							}
+							//If empty or oponent spot and not diagonal, check for eyes (stop checking when 2 eyes are found)
+							if(($iX == 0 || $iY == 0) && $board[$cX][$cY] != $color){
+								$unique = true;
+								for($i=0; $i<count($notEyeSquares) && $unique; $i++){
+									if($notEyeSquares[$i]==[$cX, $cY]){
+										$unique = false;
+									}
+								}
+								for($i=0; $i<count($eyeSquares) && $unique; $i++){
+									for($i2=0; $i2<count($eyeSquares[$i]) && $unique; $i2++){
+										if($eyeSquares[$i][$i2]==[$cX, $cY]){
+											$unique = false;
+										}
+									}
+								}
+								//If spot is not already checked for eyes, check it
+								$isEye = false;
+								if($unique){
+									$tempEyeSquares = [];
+									$tempEyeSquares[0] = [$cX, $cY];
+									$isEye = true;
+									$checkID2 = 0;
+									while($checkID2<count($tempEyeSquares) && $isEye){
+										for($i=0; $i<4 && $isEye; $i++){
+											if($i==0){
+												$cX2 = $tempEyeSquares[$checkID2][0]-1;
+												$cY2 = $tempEyeSquares[$checkID2][1];
+											}
+											if($i==1){
+												$cX2 = $tempEyeSquares[$checkID2][0];
+												$cY2 = $tempEyeSquares[$checkID2][1]-1;
+											}
+											if($i==2){
+												$cX2 = $tempEyeSquares[$checkID2][0];
+												$cY2 = $tempEyeSquares[$checkID2][1]+1;
+											}
+											if($i==3){
+												$cX2 = $tempEyeSquares[$checkID2][0]+1;
+												$cY2 = $tempEyeSquares[$checkID2][1];
+											}
+											if($cX2>=0 && $cX2<19 && $cY2>=0 && $cY2<19){
+												if($board[$cX2][$cY2] != $color){
+													$unique = true;
+													for($i2=0; $i2<count($tempEyeSquares) && $unique; $i2++){
+														if($tempEyeSquares[$i2]==[$cX2, $cY2]){
+															$unique = false;
+														}
+													}
+													if($unique){
+														$tempEyeSquares[count($tempEyeSquares)] = [$cX2, $cY2];
+														//En eye is defined as surrounded area of maximum size 25 (may contain oponent stones)
+														if(count($tempEyeSquares)>25){
+															$isEye = false;
+														}
+													}
+												}
+											}
+										}
+										$checkID2++;
+									}
+								}
+								//Add new checked squares to checked squares array
+								if($isEye){
+									$eyeSquares[count($eyeSquares)] = $tempEyeSquares;
+									$tempEyeSquares = [];
+								}else{
+									for($i=0; $i<count($tempEyeSquares); $i++){
+										$notEyeSquares[count($notEyeSquares)] = $tempEyeSquares[$i];
+									}
+									$tempEyeSquares = [];
+								}
+							}
 						}
 					}
-					if($unique){
-						$result["area"][$areaSize] = [$cX, $cY];
-						$areaSize++;
-					}
-				}
-				if($board[$cX][$cY] == 0 || $board[$cX][$cY] == 1){
-					if($result["color"] == 2){
-						$result["color"] = $board[$cX][$cY];
-					}
-					elseif($board[$cX][$cY] != $result["color"]){
-						$result["surrounded"] = False;
-					}
 				}
 			}
+			$checkID++;
 		}
-		$checkID++;
 	}
-	if($result["color"] == 2){
-		$result["surrounded"] = False;
-	}
-	return $result;
+	return [$safeStones, $eyeSquares];
 }
 
-//Capture surrounded areas
+
+//Remove dead stones and count points
 function countPoints($matchIndex)
 {
 	if(DEBUG_INFO)
 		er("countPoints()");
 	$board = getBoard($matchIndex);
 	$board = $board["board"];
+	$scoreBoard = [];
 	$points = [];
 	$points[0] = 0;
 	$points[1] = 7.5;
-	for($y=0; $y<19; $y++){
-		for($x=0; $x<19; $x++){
-			if($board[$x][$y] == 2){
-				$area = getSurroundedArea($board, $x, $y);
-				if($area["surrounded"]){
-					for($i=0; $i<count($area["area"]); $i++){
-						$board[$area["area"][$i][0]][$area["area"][$i][1]] = $area["color"];
+	$safeSquares = [];
+	$safeGroups = [];
+	$cX = 0;
+	$cY = 0;
+	$color = -1;
+	$isSafe = false;
+	$isEye = false;
+	$unique = true;
+	$checkID = 0;
+	//Set scoreBoard to -1
+	for($x = 0; $x < 19; $x++){
+		$scoreBoard[$x] = [];
+		for($y = 0; $y < 19; $y++){
+			$scoreBoard[$x][$y] = -1;
+		}
+	}
+	//Get all groups of safe squares, and their eyes
+	for($x = 0; $x < 19; $x++){
+		for($y = 0; $y < 19; $y++){
+			if($board[$x][$y]!=2 && $scoreBoard[$x][$y] == -1){
+				$ret = getSafeStones($x, $y, $board[$x][$y], $board, $scoreBoard);
+				if(count($ret[1])>1){
+					$safeGroups[count($safeGroups)] = ["stones"=> $ret[0], "eyes"=> $ret[1]];
+				}
+				for($i=0; $i< count($ret[0]); $i++){
+					$scoreBoard[$ret[0][$i][0]][$ret[0][$i][1]] = 2;
+				}
+			}
+		}
+	}
+	//Reset all stones that where not safe to -1 so that they will be checked again in next for loop
+	//(The reson they where set to 2 where to avoid them being checked multiple times in previous for loop)
+	for($x = 0; $x < 19; $x++){
+		for($y = 0; $y < 19; $y++){
+			if($scoreBoard[$x][$y] == 2){
+				$scoreBoard[$x][$y] = -1;
+			}
+		}
+	}
+	//Check all eyes of all safeGroups and disqualify the eyes that have another safe group inside them
+	for($i = 0; $i < count($safeGroups); $i++){																												//Go through all safeGroups
+		for($i2 = 0; $i2 < count($safeGroups[$i]["eyes"]); $i2++){																			//And all the eyes in that group
+			$isEye = true;
+			for($i3 = 0; $isEye && $i3 < count($safeGroups[$i]["eyes"][$i2]); $i3++){											//And all the squares in that eye
+				if($board[$safeGroups[$i]["eyes"][$i2][$i3][0]][$safeGroups[$i]["eyes"][$i2][$i3][1]] != 2){//If that square has a stone on it...
+					for($i4 = 0; $isEye && $i4 < count($safeGroups); $i4++){																	//Go through all safegroups
+						if($i != $i4){																																					//Except itself
+							for($i5 = 0; $isEye && $i5 < count($safeGroups[$i4]["stones"]); $i5++){								//And compare the square with all the stones
+								if($safeGroups[$i]["eyes"][$i2][$i3]==$safeGroups[$i4]["stones"][$i5]){
+									$isEye = false;
+								}
+							}
+						}
 					}
 				}
-				else{
-					for($i=0; $i<count($area["area"]); $i++){
-						$board[$area["area"][$i][0]][$area["area"][$i][1]] = 3;
-					}
-				}					
 			}
-			if($board[$x][$y] == 0)
-				$points[0] = $points[0] + 1;
-			if($board[$x][$y] == 1)
-				$points[1] = $points[1] + 1;
+			if(!$isEye){																																									//If en stone inside an eye was found to be safe, delete the eye
+				\array_splice($safeGroups[$i]["eyes"], $i2, 1);
+				$i2--;
+			}
+		}
+	}
+	//Set safe scoreBoard squares
+	for($i = 0; $i < count($safeGroups); $i++){
+		if(count($safeGroups[$i]["eyes"]) > 1){
+			$color = $board[$safeGroups[$i]["stones"][0][0]][$safeGroups[$i]["stones"][0][1]];
+			for($i2 = 0; $i2 < count($safeGroups[$i]["stones"]); $i2++){
+				$scoreBoard[$safeGroups[$i]["stones"][$i2][0]][$safeGroups[$i]["stones"][$i2][1]] = $color;
+			}
+		}
+	}
+	//Set squares surrounded by safe squares to also be safe
+	for($x = 0; $x < 19; $x++){
+		for($y = 0; $y < 19; $y++){
+			if($scoreBoard[$x][$y] == -1){
+				$safeSquares = [];
+				$safeSquares[0] = [$x, $y];
+				$checkID = 0;
+				$color = -1;
+				$isSafe = true;
+				//Check neighbours of all safe squares found
+				while($checkID<count($safeSquares)){
+					for($i=0; $i<4; $i++){
+						if($i==0){
+							$cX = $safeSquares[$checkID][0]-1;
+							$cY = $safeSquares[$checkID][1];
+						}
+						if($i==1){
+							$cX = $safeSquares[$checkID][0];
+							$cY = $safeSquares[$checkID][1]-1;
+						}
+						if($i==2){
+							$cX = $safeSquares[$checkID][0];
+							$cY = $safeSquares[$checkID][1]+1;
+						}
+						if($i==3){
+							$cX = $safeSquares[$checkID][0]+1;
+							$cY = $safeSquares[$checkID][1];
+						}
+						if($cX>=0 && $cX<19 && $cY>=0 && $cY<19){
+							//If unchecked square, expand safeSquares
+							if($scoreBoard[$cX][$cY] == -1){
+								$unique = true;
+								for($i2=0; $i2<count($safeSquares) && $unique; $i2++){
+									if($safeSquares[$i2]==[$cX, $cY]){
+										$unique = false;
+									}
+								}
+								if($unique){
+									$safeSquares[count($safeSquares)] = [$cX, $cY];
+								}
+							}
+							else{
+								//If checked square, if first color, save it. If different color, square is not safe
+								if($color == -1 && $scoreBoard[$cX][$cY] != 2){
+									$color = $scoreBoard[$cX][$cY];
+								}
+								else{
+									if($scoreBoard[$cX][$cY] != $color){
+										$isSafe = false;
+									}
+								}
+							}
+						}
+					}
+					$checkID++;
+				}
+				//Set safe value for squares just checked
+				if($color == -1 || $isSafe == false){
+					$color = 2;
+				}
+				for($i=0; $i<count($safeSquares); $i++){
+					$scoreBoard[$safeSquares[$i][0]][$safeSquares[$i][1]] = $color;
+				}
+			}
+		}
+	}
+	//Set score
+	for($x = 0; $x < 19; $x++){
+		for($y = 0; $y < 19; $y++){
+			if($scoreBoard[$x][$y] == 0){
+				$points[0]++;
+			}else if($scoreBoard[$x][$y] == 1){
+				$points[1]++;
+			}else{
+				if($board[$x][$y] == 0){
+					$points[0]++;
+				}else if($board[$x][$y] == 1){
+					$points[1]++;
+				}
+			}				
 		}
 	}
 	return $points;
 }
+
 
 //Get surrounded stones
 function getSurroundedStones(&$board, $x, $y, $color){

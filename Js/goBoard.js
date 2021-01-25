@@ -73,7 +73,9 @@ function btnExecute(){
 						lastPlacedStone = [obj["x"], obj["y"]];
 						markedSquare = [-1, -1];
 						nextMoveIndex = nextMoveIndex + 1;
+						lastColor = 1-lastColor;
 						document.getElementById("yourTurn").innerHTML = notYourTurnText;
+						document.getElementById("yourTurnDiv").style.display = "none";
 						startServerPushing();
 						draw();
 					}
@@ -102,7 +104,9 @@ function btnPass(){
 					if("action" in obj && obj["action"] == "turn passed"){
 						markedSquare = [-1, -1];
 						nextMoveIndex = nextMoveIndex + 1;
+						lastColor = 1-lastColor;
 						document.getElementById("yourTurn").innerHTML = notYourTurnText;
+						document.getElementById("yourTurnDiv").style.display = "none";
 						lastAction = "pass";
 						startServerPushing();
 						draw();
@@ -157,31 +161,34 @@ function btnGiveUp(){
 //Preview score
 function btnPreviewScore(){
 	var safeSquares = [];
-	var safeSquaresSize = 0;
+	var safeGroups = [];
 	var cX = 0;
 	var cY = 0;
 	var color = -1;
 	var isSafe = false;
+	var isEye = false;
 	var unique = true;
 	var checkID = 0;
 	var blackScore = 0;
-	var whiteScore = 0;
-	//Copy board to scoreBoard
+	var whiteScore = 7.5;
+	//Set scoreBoard to -1
 	scoreBoard = [];
 	for(var x = 0; x < 19; x++){
 		scoreBoard[x] = [];
 		for(var y = 0; y < 19; y++){
-			scoreBoard[x][y] = {safe: -1, stone: board[x][y]};
+			scoreBoard[x][y] = -1;
 		}
 	}
-	//Set safe squares (squares conected to two eyes)
+	//Get all groups of safe squares, and their eyes
 	for(var x = 0; x < 19; x++){
 		for(var y = 0; y < 19; y++){
-			if(board[x][y]!=stone.empty && scoreBoard[x][y].safe == -1){
-				var ret = getSafeStones(x, y, scoreBoard[x][y].stone);
-				var safeVal = (ret[2] ? scoreBoard[x][y].stone : stone.empty);
-				for(var i=0; i< ret[1]; i++){
-					scoreBoard[ret[0][i][0]][ret[0][i][1]].safe = safeVal;
+			if(board[x][y]!=stone.empty && scoreBoard[x][y] == -1){
+				var ret = getSafeStones(x, y, board[x][y]);
+				if(ret[1].length>1){
+					safeGroups[safeGroups.length] = {stones: ret[0], eyes: ret[1]};
+				}
+				for(var i=0; i< ret[0].length; i++){
+					scoreBoard[ret[0][i][0]][ret[0][i][1]] = stone.empty;
 				}
 			}
 		}
@@ -190,23 +197,54 @@ function btnPreviewScore(){
 	//(The reson they where set to 2 where to avoid them being checked multiple times in previous for loop)
 	for(var x = 0; x < 19; x++){
 		for(var y = 0; y < 19; y++){
-			if(scoreBoard[x][y].safe == 2){
-				scoreBoard[x][y].safe = -1;
+			if(scoreBoard[x][y] == stone.empty){
+				scoreBoard[x][y] = -1;
+			}
+		}
+	}
+	//Check all eyes of all safeGroups and disqualify the eyes that have another safe group inside them
+	for(var i = 0; i < safeGroups.length; i++){																													//Go through all safeGroups
+		for(var i2 = 0; i2 < safeGroups[i].eyes.length; i2++){																						//And all the eyes in that group
+			isEye = true;
+			for(var i3 = 0; isEye && i3 < safeGroups[i].eyes[i2].length; i3++){															//And all the squares in that eye
+				if(board[safeGroups[i].eyes[i2][i3][0]][safeGroups[i].eyes[i2][i3][1]] != stone.empty){	//If that square has a stone on it...
+					for(var i4 = 0; isEye && i4 < safeGroups.length; i4++){																			//Go through all safegroups
+						if(i != i4){																																							//Except itself
+							for(var i5 = 0; isEye && i5 < safeGroups[i4].stones.length; i5++){											//And compare the square with all the stones
+								if(arraysEqual(safeGroups[i].eyes[i2][i3], safeGroups[i4].stones[i5])){
+									isEye = false;
+								}
+							}
+						}
+					}
+				}
+			}
+			if(!isEye){																																											//If en stone inside an eye was found to be safe, delete the eye
+				safeGroups[i].eyes.splice(i2, 1);
+				i2--;
+			}
+		}
+	}
+	//Set safe scoreBoard squares
+	for(var i = 0; i < safeGroups.length; i++){
+		if(safeGroups[i].eyes.length > 1){
+			color = board[safeGroups[i].stones[0][0]][safeGroups[i].stones[0][1]];
+			for(var i2 = 0; i2 < safeGroups[i].stones.length; i2++){
+				scoreBoard[safeGroups[i].stones[i2][0]][safeGroups[i].stones[i2][1]] = color;
 			}
 		}
 	}
 	//Set squares surrounded by safe squares to also be safe
 	for(var x = 0; x < 19; x++){
 		for(var y = 0; y < 19; y++){
-			if(scoreBoard[x][y].safe == -1){
+			if(scoreBoard[x][y] == -1){
 				safeSquares = [];
 				safeSquares[0] = [x, y];
-				safeSquaresSize = 1;
 				checkID = 0;
 				color = -1;
 				isSafe = true;
 				//Check neighbours of all safe squares found
-				while(checkID<safeSquaresSize){
+				while(checkID<safeSquares.length){
 					for(var i=0; i<4; i++){
 						if(i==0){
 							cX = safeSquares[checkID][0]-1;
@@ -226,25 +264,24 @@ function btnPreviewScore(){
 						}
 						if(cX>=0 && cX<19 && cY>=0 && cY<19){
 							//If unchecked square, expand safeSquares
-							if(scoreBoard[cX][cY].safe == -1){
+							if(scoreBoard[cX][cY] == -1){
 								unique = true;
-								for(var i2=0; i2<safeSquaresSize && unique; i2++){
+								for(var i2=0; i2<safeSquares.length && unique; i2++){
 									if(arraysEqual(safeSquares[i2], [cX, cY])){
 										unique = false;
 									}
 								}
 								if(unique){
-									safeSquares[safeSquaresSize] = [cX, cY];
-									safeSquaresSize++;
+									safeSquares[safeSquares.length] = [cX, cY];
 								}
 							}
 							else{
 								//If checked square, if first color, save it. If different color, square is not safe
-								if(color == -1 && scoreBoard[cX][cY].safe != stone.empty){
-									color = scoreBoard[cX][cY].safe;
+								if(color == -1 && scoreBoard[cX][cY] != stone.empty){
+									color = scoreBoard[cX][cY];
 								}
 								else{
-									if(scoreBoard[cX][cY].safe != color){
+									if(scoreBoard[cX][cY] != color){
 										isSafe = false;
 									}
 								}
@@ -257,8 +294,8 @@ function btnPreviewScore(){
 				if(color == -1 || isSafe == false){
 					color = stone.empty;
 				}
-				for(var i=0; i<safeSquaresSize; i++){
-					scoreBoard[safeSquares[i][0]][safeSquares[i][1]].safe = color;
+				for(var i=0; i<safeSquares.length; i++){
+					scoreBoard[safeSquares[i][0]][safeSquares[i][1]] = color;
 				}
 			}
 		}
@@ -266,14 +303,14 @@ function btnPreviewScore(){
 	//Set score
 	for(var x = 0; x < 19; x++){
 		for(var y = 0; y < 19; y++){
-			if(scoreBoard[x][y].safe == stone.black){
+			if(scoreBoard[x][y] == stone.black){
 				blackScore++;
-			}else if(scoreBoard[x][y].safe == stone.white){
+			}else if(scoreBoard[x][y] == stone.white){
 				whiteScore++;
 			}else{
-				if(scoreBoard[x][y].stone == stone.black){
+				if(board[x][y] == stone.black){
 					blackScore++;
-				}else if(scoreBoard[x][y].stone == stone.white){
+				}else if(board[x][y] == stone.white){
 					whiteScore++;
 				}
 			}				
@@ -394,11 +431,11 @@ function drawScore(blackScore, whiteScore){
 	//Draw board
 	for (y=0; y<boardSize; y++){
 		for (x=0; x<boardSize; x++){
-			if(scoreBoard[x][y].safe == stone.empty){
+			if(scoreBoard[x][y] == stone.empty){
 				ctx.fillStyle = "#DFC156";
-			}else if(scoreBoard[x][y].safe == stone.white){
+			}else if(scoreBoard[x][y] == stone.white){
 				ctx.fillStyle = "#BBBBBB";
-			}else if(scoreBoard[x][y].safe == stone.black){
+			}else if(scoreBoard[x][y] == stone.black){
 				ctx.fillStyle = "#444444";
 			}
 			ctx.beginPath();
@@ -423,14 +460,14 @@ function drawScore(blackScore, whiteScore){
 	//Draw stones
 	for (y=0; y<boardSize; y++){
 		for (x=0; x<boardSize; x++){
-			if(scoreBoard[x][y].stone == stone.black){
+			if(board[x][y] == stone.black){
 					ctx.fillStyle = "#000000";
 					ctx.lineWidth = 1;
 					ctx.beginPath();
 					ctx.arc((x+0.5)*squareSize, (y+0.5)*squareSize, squareSize*0.4, 0, 2 * Math.PI);
 					ctx.fill();
 			}
-			if(scoreBoard[x][y].stone == stone.white){
+			if(board[x][y] == stone.white){
 					ctx.fillStyle = "#FFFFFF";
 					ctx.lineWidth = 1;
 					ctx.beginPath();
@@ -441,7 +478,7 @@ function drawScore(blackScore, whiteScore){
 					ctx.arc((x+0.5)*squareSize, (y+0.5)*squareSize, squareSize*0.4, 0, 2 * Math.PI);
 					ctx.stroke();
 			}
-			if((scoreBoard[x][y].stone == stone.black && scoreBoard[x][y].safe == stone.white) || (scoreBoard[x][y].stone == stone.white && scoreBoard[x][y].safe == stone.black)){
+			if((board[x][y] == stone.black && scoreBoard[x][y] == stone.white) || (board[x][y] == stone.white && scoreBoard[x][y] == stone.black)){
 				ctx.strokeStyle = "#FF0000";
 				ctx.lineWidth = 2;
 				ctx.beginPath();
@@ -497,10 +534,12 @@ function loadBoard(){
 				lastAction = obj["lastAction"];
 				if(lastColor == 1-playerColor){
 					document.getElementById("yourTurn").innerHTML = yourTurnText;
+					document.getElementById("yourTurnDiv").style.display = "block";
 				}
 				else{
 					startServerPushing();
 					document.getElementById("yourTurn").innerHTML = notYourTurnText;
+					document.getElementById("yourTurnDiv").style.display = "none";
 				}
 				draw();
 			}
@@ -555,9 +594,13 @@ function startServerPushing(){
 					};
 				}
 				nextMoveIndex = nextMoveIndex + 1;
-				document.getElementById("yourTurn").innerHTML = yourTurnText;
-				if(!tabInFocus){
-					tabNotification.On("Your turn!");
+				lastColor = 1-lastColor;
+				if(playerColor != 2){
+					document.getElementById("yourTurn").innerHTML = yourTurnText;
+					document.getElementById("yourTurnDiv").style.display = "block";
+					if(!tabInFocus){
+						tabNotification.On("Your turn!");
+					}
 				}
 				draw();
 			}
@@ -583,33 +626,27 @@ function startServerPushing(){
 //Get safe stones
 function getSafeStones(x, y, color){
 	var safeStones = [];
-	var safeStonesSize = 0;
+	var notEyeSquares = [];
 	var eyeSquares = [];
-	var eyeSquaresSize = 0;
 	var tempEyeSquares = [];
-	var tempEyeSquaresSize = 0;
 	var checkID = 0;
 	var checkID2 = 0;
-	var eyeCount = 0;
-	var isSafe = false;
 	var unique = true;
 	var isEye = false;
 	var cX2 = 0;
 	var cY2 = 0;
 	//Check so coordinates is inside board and right color stone is in that spot
 	if(x>=0 && x<19 && y>=0 && y<19){
-		if(scoreBoard[x][y].stone == color){
+		if(board[x][y] == color){
 			safeStones = [];
 			safeStones[0] = [x, y];
-			safeStonesSize = 1;
 		}
 		else{
 			safeStones = [];
-			safeStonesSize = 0;
 		}
 		checkID = 0;
 		//Check neighbours of all safe stones found
-		while(checkID<safeStonesSize){
+		while(checkID<safeStones.length){
 			for(var iX=-1; iX<2; iX++){
 				for(var iY=-1; iY<2; iY++){
 					var cX=safeStones[checkID][0]+iX;
@@ -617,28 +654,34 @@ function getSafeStones(x, y, color){
 					//Check that neighbour is inside board, and is not itself
 					if(cX>=0 && cX<19 && cY>=0 && cY<19 && !(iX==0 && iY==0)){
 						//If it is a diagonal neighbour, check that both stones bewteen is not oponent stones
-						if(iX != 0 && iY != 0 && scoreBoard[cX-iX][cY].stone == 1-color && scoreBoard[cX][cY-iY].stone == 1-color){
+						if(iX != 0 && iY != 0 && board[cX-iX][cY] == 1-color && board[cX][cY-iY] == 1-color){
 						}
 						else{
 							//If friendly stone, expand safeStones
-							if(scoreBoard[cX][cY].stone == color){
+							if(board[cX][cY] == color){
 								unique = true;
-								for(i=0; i<safeStonesSize && unique; i++){
+								for(i=0; i<safeStones.length && unique; i++){
 									if(arraysEqual(safeStones[i], [cX, cY])){
 										unique = false;
 									}
 								}
 								if(unique){
-									safeStones[safeStonesSize] = [cX, cY];
-									safeStonesSize++;
+									safeStones[safeStones.length] = [cX, cY];
 								}
 							}
 							//If empty or oponent spot and not diagonal, check for eyes (stop checking when 2 eyes are found)
-							if((iX == 0 || iY == 0) && scoreBoard[cX][cY].stone != color && eyeCount<2){
+							if((iX == 0 || iY == 0) && board[cX][cY] != color){
 								unique = true;
-								for(i=0; i<eyeSquaresSize && unique; i++){
-									if(arraysEqual(eyeSquares[i], [cX, cY])){
+								for(var i=0; i<notEyeSquares.length && unique; i++){
+									if(arraysEqual(notEyeSquares[i], [cX, cY])){
 										unique = false;
+									}
+								}
+								for(var i=0; i<eyeSquares.length && unique; i++){
+									for(var i2=0; i2<eyeSquares[i].length && unique; i2++){
+										if(arraysEqual(eyeSquares[i][i2], [cX, cY])){
+											unique = false;
+										}
 									}
 								}
 								//If spot is not already checked for eyes, check it
@@ -646,10 +689,9 @@ function getSafeStones(x, y, color){
 								if(unique){
 									tempEyeSquares = [];
 									tempEyeSquares[0] = [cX, cY];
-									tempEyeSquaresSize = 1;
 									isEye = true;
 									checkID2 = 0;
-									while(checkID2<tempEyeSquaresSize && isEye){
+									while(checkID2<tempEyeSquares.length && isEye){
 										for(var i=0; i<4 && isEye; i++){
 											if(i==0){
 												cX2 = tempEyeSquares[checkID2][0]-1;
@@ -668,18 +710,17 @@ function getSafeStones(x, y, color){
 												cY2 = tempEyeSquares[checkID2][1];
 											}
 											if(cX2>=0 && cX2<19 && cY2>=0 && cY2<19){
-												if(scoreBoard[cX2][cY2].stone != color){
+												if(board[cX2][cY2] != color){
 													unique = true;
-													for(i2=0; i2<tempEyeSquaresSize && unique; i2++){
+													for(var i2=0; i2<tempEyeSquares.length && unique; i2++){
 														if(arraysEqual(tempEyeSquares[i2], [cX2, cY2])){
 															unique = false;
 														}
 													}
 													if(unique){
-														tempEyeSquares[tempEyeSquaresSize] = [cX2, cY2];
-														tempEyeSquaresSize++;
+														tempEyeSquares[tempEyeSquares.length] = [cX2, cY2];
 														//En eye is defined as surrounded area of maximum size 25 (may contain oponent stones)
-														if(tempEyeSquaresSize>25){
+														if(tempEyeSquares.length>25){
 															isEye = false;
 														}
 													}
@@ -690,14 +731,14 @@ function getSafeStones(x, y, color){
 									}
 								}
 								//Add new checked squares to checked squares array
-								for(var i=0; i<tempEyeSquaresSize; i++){
-									eyeSquares[eyeSquaresSize+i] = tempEyeSquares[i];
-								}
-								eyeSquaresSize += tempEyeSquaresSize;
-								tempEyeSquares = [];
-								tempEyeSquaresSize = 0;
 								if(isEye){
-									eyeCount++;
+									eyeSquares[eyeSquares.length] = tempEyeSquares;
+									tempEyeSquares = [];
+								}else{
+									for(var i=0; i<tempEyeSquares.length; i++){
+										notEyeSquares[notEyeSquares.length] = tempEyeSquares[i]
+									}
+									tempEyeSquares = [];
 								}
 							}
 						}
@@ -707,10 +748,7 @@ function getSafeStones(x, y, color){
 			checkID++;
 		}
 	}
-	if(eyeCount > 1){
-		isSafe = true;
-	}
-	return [safeStones, safeStonesSize, isSafe];
+	return [safeStones, eyeSquares];
 }
 
 //Get surrounded stones

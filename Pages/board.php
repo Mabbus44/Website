@@ -30,6 +30,9 @@
 					</div>
 				</div>
 				<div class="bottomAlignedColumn">
+					<div id="yourTurnDiv">
+						<label id="yourTurn"></label>
+					</div>
 					<div class="leftAlignedRow">
 						<canvas width=30 height=30 id="blackStone"></canvas>
 						<label id="blackName"><?php echo getNameFromMatchID($_REQUEST["id"], 0); ?></label>
@@ -43,10 +46,9 @@
 						<label id="whiteScore"></label>
 					</div>
 					<button onclick="btnPreviewScore()"><?php dict("Preview score")?></button>
-					<label id="yourTurn"></label>
-					<button onclick="btnGiveUp()"><?php dict("Give up")?></button>
-					<button onclick="btnPass()"><?php dict("Pass")?></button>
-					<button onclick="btnExecute()"><?php dict("Confirm")?></button>
+					<button onclick="btnGiveUp()" id="btnGiveUp"><?php dict("Give up")?></button>
+					<button onclick="btnPass()" id="btnPass"><?php dict("Pass")?></button>
+					<button onclick="btnExecute()" id="btnExecute"><?php dict("Confirm")?></button>
 				</div>
 			</div>
 			<label style="clear:left; display:block;" id="dbg"></label>
@@ -54,6 +56,11 @@
 				document.getElementById("goCanvas").addEventListener("click", canvasClick, false);
 				matchIndex = <?php echo $_REQUEST["id"]; ?>;
 				playerColor = <?php echo getPlayerColor($_REQUEST["id"]); ?>;
+				if(playerColor == 2){
+					document.getElementById("btnGiveUp").style.display = "none";
+					document.getElementById("btnPass").style.display = "none";
+					document.getElementById("btnExecute").style.display = "none";
+				}
 				yourTurnText = "<?php dict("Your turn")?>";
 				notYourTurnText = "<?php dict("Not your turn")?>";
 				selectLocationText = "<?php dict("Select location")?>";
