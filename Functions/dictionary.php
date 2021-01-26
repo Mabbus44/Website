@@ -54,7 +54,13 @@
 			"Ok" 											=> array("Ok",											"-"),
 			"Are you sure you want to give up?" 											=> array("Are you sure you want to give up?",											"-？"),
 			"Select location" 				=> array("Select location",					"-"),
-			"Preview score" 				=> array("Preview score",					"-")
+			"Preview score" 					=> array("Preview score",						"-"),
+			"Win" 										=> array("Win",											"-"),
+			"Loss" 										=> array("Loss",										"-"),
+			"Oponent" 								=> array("Oponent",									"-"),
+			"Score" 									=> array("Score",										"-"),
+			"Surrender" 							=> array("Surrender",								"-"),
+			"Match history" 					=> array("Match history",						"-")
 		);
 		if(array_key_exists($keyStr, $words)){
 			return $words[$keyStr][$lang];

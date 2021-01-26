@@ -1,5 +1,6 @@
 <?php
 	include_once(__DIR__."/../Functions/accountFunctions.php");
+	include_once(__DIR__."/../Functions/profileFunctions.php");
 	checkIfLoggedIn();
 ?>
 <!DOCTYPE html>
@@ -18,9 +19,10 @@
 			<form action="../Pages/main.php">
 				<button type="submit"><?php dict("Main")?></button>
 			</form>
-			<form action="../Pages/replay.php">
-				<button type="submit"><?php dict("Replay")?></button>
-			</form>
+			<label id="matchHistory"><?php dict("Match history")?></label>
+				<?php
+					matchList();
+				?>
 		</div>
 	</body>
 </html>

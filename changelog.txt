@@ -3,6 +3,7 @@ V 1.04
 * Display players names and colors on board screen
 * Preview score
 * Remove dead stones in scoring
+* Match history in profile
 
 V 1.03
 * Mark last played stone
@@ -68,7 +69,6 @@ New features
 ---------------------------------------------------------------------------------------------------------------
 
 features for comming versions
-* Match history in profile
 * Ipad support
 * Chinese language
 
