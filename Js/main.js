@@ -1,7 +1,18 @@
+var language = 0;
+
 //Go to game
 function btnGoToGame(){
 	if(document.getElementById("matchID").value > 0){
 		window.location.href = "../Pages/board.php?id=" + document.getElementById("matchID").value;
+	}
+}
+
+//Open rules
+function btnOpenRules(){
+	if(language == 1){
+		window.open("../Rules/Rules_ch.pdf");
+	}else{
+		window.open("../Rules/Rules_en.pdf");
 	}
 }
 

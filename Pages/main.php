@@ -14,9 +14,13 @@
 	</head>
 	<body>
 		<?php topPanel()?>
+		<script>
+			language = <?php getSession("language")?>
+		</script>
 		<div class="contentDiv">
 			<h1><?php dict("Main")?></h1>
 			<hr class="h1Line">
+			<button type="button" id="openRules" onclick="btnOpenRules()"><?php dict("Rules")?></button>
 			<form action="../Pages/challenge.php">
 				<button type="submit"><?php dict("Challenge players")?></button>
 			</form>
@@ -34,7 +38,7 @@
 				?></div>
 				<div class="secondOfPair"><button type="button" id="goToGame" onclick="btnGoToGame()"><?php dict("Go to game")?></button></div>
 			</div>
-			<a href="../changelog.txt" target="_blank" id="changelogLink">v 1.03</a>
+			<a href="../changelog.txt" target="_blank" id="changelogLink">v 1.04</a>
 		</div>
 	</body>
 </html>

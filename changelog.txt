@@ -4,6 +4,8 @@ V 1.04
 * Preview score
 * Remove dead stones in scoring
 * Match history in profile
+* Chinese language
+* Link rules from main page
 
 V 1.03
 * Mark last played stone
@@ -69,9 +71,6 @@ New features
 ---------------------------------------------------------------------------------------------------------------
 
 features for comming versions
-* Ipad support
-* Chinese language
-
 * Auto fill username and autologin
 * View replay
 * Update main page automatically
@@ -80,3 +79,4 @@ features for comming versions
 Known bugs
 * Sometimes gets "cannot connect to database" error, might just be one´s database not responding thou
 * When switching from board page, it waits until php times out, causing a delay
+* The "your turn" box can become stuck when its not your turn if you make moves quick
