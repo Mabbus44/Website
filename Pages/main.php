@@ -15,7 +15,7 @@
 	<body>
 		<?php topPanel()?>
 		<script>
-			language = <?php getSession("language")?>
+			language = <?php echo getSession("language");?>
 		</script>
 		<div class="contentDiv">
 			<h1><?php dict("Main")?></h1>
