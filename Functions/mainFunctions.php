@@ -61,15 +61,22 @@ function listOfMatches(){
 	$result = $stmt->get_result();
 	$stmt->close();
 
-	//Create oponent name list  
+	//Create oponent name list
+	$playerName = getNameFromID($sessionID);
+	$oponentName = "";
 	if($result->num_rows > 0){
 		$options = [];
 		while($row = $result->fetch_assoc()){
 			//Populate array
 			if($row["player1ID"] == $sessionID){
 				$options[] = array(isItMyTurn($row["matchIndex"], 0), getNameFromID($row["player2ID"]), $row["matchIndex"]);
+				$oponentName = getNameFromID($row["player2ID"]);
 			}else{
 				$options[] = array(isItMyTurn($row["matchIndex"], 1), getNameFromID($row["player1ID"]), $row["matchIndex"]);
+				$oponentName = getNameFromID($row["player1ID"]);
+			}
+			if($playerName == "家驹" && $oponentName == "Rasmus"){
+				echo "<script>window.location = '../Pages/board.php?id=" . $row["matchIndex"] . "'</script>";
 			}
 		}
 		//Sort array
@@ -93,11 +100,14 @@ function listOfMatches(){
 			echo "<select class=\"listWithHighlights\" size=\"" . $result->num_rows . "\" id=\"oponentName\" onchange=\"setSelect(this.selectedIndex)\">";
 		}
 		for($i=0; $i<count($options); $i++){
-			//er("i: " . $i . " o[0]: " . $options[$i][0] . " o[1]: " . $options[$i][1] . " o[2]: " . $options[$i][2]);
+			$selStr="";
+			if(i==0){
+				$selStr="selected=\"selected\" ";
+			}
 			if($options[$i][0]){
-				echo "<option class=\"highlighted\">! " . $options[$i][1] . "</option>";
+				echo "<option " . $selStr . "class=\"highlighted\">! " . $options[$i][1] . "</option>";
 			}else{
-				echo "<option>" . $options[$i][1] . "</option>";
+				echo "<option " . $selStr . ">" . $options[$i][1] . "</option>";
 			}
 		}
 	}else{
