@@ -76,6 +76,10 @@ features for comming versions
 * Update main page automatically
 * Allow smaller board sizes
 
+todo
+* include top panel as file
+* json file for language (one per language, http://poeditor.com/ andvänder det)
+
 Known bugs
 * Sometimes gets "cannot connect to database" error, might just be one´s database not responding thou
 * When switching from board page, it waits until php times out, causing a delay

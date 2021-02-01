@@ -83,13 +83,9 @@ function listOfMatches(){
 		for($i=0; $i<count($options); $i++){
 			if($options[$i][0]){
 				for($i2=$i; $i2>0; $i2--){
-					er("Before: " . $i . " = [" . $options[$i][0] . ", " . $options[$i][1] . ", " . $options[$i][2] . "]");
-					er("Before: " . $i2 . " = [" . $options[$i2][0] . ", " . $options[$i2][1] . ", " . $options[$i2][2] . "]");
 					$temp = $options[$i];
 					$options[$i] = $options[$i2-1];
 					$options[$i2-1] = $temp;
-					er("After: " . $i . " = [" . $options[$i][0] . ", " . $options[$i][1] . ", " . $options[$i][2] . "]");
-					er("After: " . $i2 . " = [" . $options[$i2][0] . ", " . $options[$i2][1] . ", " . $options[$i2][2] . "]");
 				}
 			}
 		}
@@ -100,14 +96,10 @@ function listOfMatches(){
 			echo "<select class=\"listWithHighlights\" size=\"" . $result->num_rows . "\" id=\"oponentName\" onchange=\"setSelect(this.selectedIndex)\">";
 		}
 		for($i=0; $i<count($options); $i++){
-			$selStr="";
-			if(i==0){
-				$selStr="selected=\"selected\" ";
-			}
 			if($options[$i][0]){
-				echo "<option " . $selStr . "class=\"highlighted\">! " . $options[$i][1] . "</option>";
+				echo "<option class=\"highlighted\">! " . $options[$i][1] . "</option>";
 			}else{
-				echo "<option " . $selStr . ">" . $options[$i][1] . "</option>";
+				echo "<option>" . $options[$i][1] . "</option>";
 			}
 		}
 	}else{
