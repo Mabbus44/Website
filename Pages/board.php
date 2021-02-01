@@ -15,8 +15,8 @@
 	<body>
 		<?php topPanel()?>
 		<div class="contentDiv">
-			<h1><?php dict("Board")?></h1>
-			<hr class="h1Line">
+			<h1 style="display:none"><?php dict("Board")?></h1>
+			<hr class="h1Line" style="display:none">
 			<div>
 				<div id="canvasDiv">
 					<canvas width=570 height=570 id="goCanvas" style="border:1px solid #000000;"></canvas>

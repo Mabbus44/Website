@@ -847,8 +847,10 @@ function captureStones(x, y, color)
 }
 
 //Show messages on canvasLabel
-function showMessage(msg, timeOrString=3000, func=null)
+function showMessage(msg, timeOrString, func)
 {
+	timeOrString = typeof timeOrString !== 'undefined' ? timeOrString : 3000;
+	func = typeof func !== 'undefined' ? func : null;
 	if(blockingPopup){
 		return;
 	}
