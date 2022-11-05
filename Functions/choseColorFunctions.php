@@ -6,17 +6,17 @@ function handlePost(){
 		er("handlePost()");
 	if($_POST){
 		//Save challenges id and reload
-		if($_POST["challengerID"]){
+		if(isset($_POST["challengerID"])){
 			setSession("challengerID", $_POST["challengerID"]);
 			header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/choseColor.php");
 		}
 		//If color was chosen, start game
 		if(getSession("challengerID") and ($_POST["black"] or $_POST["white"])){
 			$isWhite = false;
-			if($_POST["black"]){
+			if(isset($_POST["black"])){
 				setSession("color", "black");
 			}
-			if($_POST["white"]){
+			if(isset($_POST["white"])){
 				setSession("color", "white");
 				$isWhite = true;
 			}
