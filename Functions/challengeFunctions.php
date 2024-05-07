@@ -6,7 +6,6 @@ function challengePlayer(){
 		er("challengePlayer()");
 	if(isset($_POST)){
 		if(isset($_POST["challengedID"])){
-			er("ChallangedID is in post");
 			//Conect to database
 			$conn = dbCon();
 			if(!$conn)
