@@ -43,13 +43,11 @@ if($board["lastColor"] == $color){
 }
 //Check if the placed stone is on a valid square
 if(!validSquare($board["board"], $board["oldBoard"], $x, $y, $color)){
-	er("ValidSquare = False");
 	$result["info"] = dictRet("Invalid placement");
 	$result["boards"] = $board;
 	echo json_encode($result);
 	exit();
 }
-er("ValidSquare = True");
 //Insert new move into database
 $action = 1;
 $stmt = ps($conn, "INSERT INTO `tableName` (`x`, `y`, `action`, `moveIndex`, `matchIndex`) VALUES (?,?,?,?,?)", "currentGames");
