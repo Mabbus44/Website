@@ -2,7 +2,6 @@
 include_once(__DIR__."/../Functions/commonFunctions.php");
 
 function challengePlayer(){
-	er("challengePlayer()");
 	if(DEBUG_INFO)
 		er("challengePlayer()");
 	if(isset($_POST)){
