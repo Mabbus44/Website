@@ -38,7 +38,7 @@
 				?></div>
 				<div class="secondOfPair"><button type="button" id="goToGame" onclick="btnGoToGame()"><?php dict("Go to game")?></button></div>
 			</div>
-			<a href="../changelog.txt" target="_blank" id="changelogLink">v 1.04</a>
+			<a href="../changelog.txt" target="_blank" id="changelogLink">v 1.05</a>
 		</div>
 	</body>
 </html>

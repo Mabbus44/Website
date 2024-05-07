@@ -1,3 +1,11 @@
+V 1.05
+* Secrets in separate file
+* Page for viewing finished GO board (no link to it yet, but you can find it at rasmus.today/finishedboard.php?id=183
+* Support now PHP version
+* Support pre 2015 js
+* Local copy of jQuery
+* Automatically go to game for VIP
+
 V 1.04
 * Mark games in main menu where it is your turn
 * Display players names and colors on board screen
@@ -78,7 +86,7 @@ features for comming versions
 
 todo
 * include top panel as file
-* json file for language (one per language, http://poeditor.com/ andvänder det)
+* json file for language (one per language, http://poeditor.com/ uses it)
 
 Known bugs
 * Sometimes gets "cannot connect to database" error, might just be one´s database not responding thou

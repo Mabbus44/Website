@@ -11,7 +11,7 @@ function handlePost(){
 			header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/choseColor.php");
 		}
 		//If color was chosen, start game
-		if(getSession("challengerID") and ($_POST["black"] or $_POST["white"])){
+		if(getSession("challengerID") and (isset($_POST["black"]) or isset($_POST["white"]))){
 			$isWhite = false;
 			if(isset($_POST["black"])){
 				setSession("color", "black");
