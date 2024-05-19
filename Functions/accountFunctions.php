@@ -86,4 +86,25 @@ function topPanel(){
 	echo	 "</div>";
 	echo "</div>";
 }
+
+function chessTopPanel(){
+	echo "<div id=\"topPanel\">";
+	echo	 "<div id=\"topCenterPanel\">";
+	echo		 "<form id=\"goIconButtonForm\" action=\"../Pages/chessBoard.php\">";
+	echo		 	 "<button type=\"submit\" id=\"goIconButton\">".dictRet("Chess")."</button>";
+	echo		 "</form>";
+	echo		 "<button id=\"enLangButton\" type=\"button\" onclick=\"changeLanguage(0)\"></button>";
+	echo		 "<button id=\"chLangButton\" type=\"button\" onclick=\"changeLanguage(1)\"></button>";
+	if(issetSession("username")){
+		echo		 "<div class=\"column\">";
+		echo			 "<a href=\"../Pages/profile.php\">".getSession("username")."</a>";
+		echo			 "<a href=\"../Functions/logOut.php\">".dictRet("Log out")."</a>";
+		echo		 "</div>";
+	}
+	else{
+		echo		 "<a href=\"../Pages/logIn.php\">".dictRet("Log in")."</a>";
+	}
+	echo	 "</div>";
+	echo "</div>";
+}
 ?>

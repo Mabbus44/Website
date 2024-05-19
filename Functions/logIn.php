@@ -6,7 +6,8 @@
 			return;
 		}
 		include_once(__DIR__."/../Functions/commonFunctions.php");
-		include_once(__DIR__."/../Functions/accountFunctions.php");
+		include_once(__DIR__."/../Functions/chessBoardFunctions.php");
+		include_once(__DIR__."/../Functions/commonFunctions.php");
 		session_start();
 
 		//Conect to database
@@ -47,6 +48,16 @@
 		$conn->close();
 		setSession("username", $postUsername);
 		setSession("id", $row["id"]);
-		header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/main.php");
+		$nemesisInfo = getChessNemesisMatchIdAndStatus();
+		if(is_null($nemesisInfo["nemesisId"])){
+			//No chess nemesis
+			header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/main.php");
+		}else{
+			if($nemesisInfo["matchOver"]){
+				header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/chessBoard.php");
+			}else{
+				header("Location: ".dirname($_SERVER['PHP_SELF'])."/../Pages/chessBoard.php?id=" . $nemesisInfo["matchId"]);
+			}
+		}
 	}
 ?>

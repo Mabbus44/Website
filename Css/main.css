@@ -1,6 +1,6 @@
 /*General settings*/
 body {
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
   height: 100%;
   margin: 0;
 }
@@ -11,10 +11,10 @@ label {
 }
 
 h1 {
-    color: #404A88;
-    text-align: center;
-    font-size: 30px;
-    margin: 2px;
+  color: #404a88;
+  text-align: center;
+  font-size: 30px;
+  margin: 2px;
 }
 
 input {
@@ -25,185 +25,199 @@ input {
 }
 
 button {
-    height: 30px;
-    width: 300px;
-    font-size: 14px;
-    margin: 10px 20px;
-    background-image: linear-gradient(#376B90, #1E4B70);
-    color: white;
+  height: 30px;
+  width: 300px;
+  font-size: 14px;
+  margin: 10px 20px;
+  background-image: linear-gradient(#376b90, #1e4b70);
+  color: white;
 }
 
 button:hover {
-    background-image: linear-gradient(#4586B2, #286596);
-    cursor: pointer;
+  background-image: linear-gradient(#4586b2, #286596);
+  cursor: pointer;
 }
 
 select {
-    margin: 10px 20px;
+  margin: 10px 20px;
 }
 
 hr {
-    margin-top: 30px;
-    margin-bottom: 30px;
-    border-top: 1px dotted grey;
-    width: 100%;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  border-top: 1px dotted grey;
+  width: 100%;
 }
 
 form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 /*Class settings*/
 .contentDiv {
-    width: 949px;
-    margin: auto;
-    margin-top: 20px;
-    padding-top: 0px;
-    padding-bottom: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
-    background-color: white;
-    box-shadow: 0px 0px 10px 3px #CCCCCC;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 949px;
+  margin: auto;
+  margin-top: 20px;
+  padding-top: 0px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: white;
+  box-shadow: 0px 0px 10px 3px #cccccc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .h1Line {
-    margin-top: 0px;
-    margin-bottom: 10px;
+  margin-top: 0px;
+  margin-bottom: 10px;
 }
 
 .column {
-    display: flex;
-    flex-direction: column;
-    justify-content: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
 }
 
 .pairOfElements {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .firstOfPair {
-    width: 50%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
+  width: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 
 .secondOfPair {
-    width: 50%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
+  width: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
 }
 
 .bottomAlignedColumn {
-	display: flex;
-	height: 570px;
-	flex-direction: column;
-	justify-content: flex-end;
+  display: flex;
+  height: 570px;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.chessBottomAlignedColumn {
+  display: flex;
+  height: 570px;
+  width: 340px;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .bottomAlignedColumn * {
-	margin-top: 10px;
-	margin-bottom: 0px;
-	text-align: center;
+  margin-top: 10px;
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+.chessBottomAlignedColumn * {
+  margin-top: 10px;
+  margin-bottom: 0px;
+  text-align: center;
 }
 
 .leftAlignedRow {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
-   align-items: center;
-	margin-top: 10px;
-	margin-bottom: 0px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 0px;
   margin-left: 20px;
 }
 
 .leftAlignedRow * {
-	text-align: left;
-	margin: 0px;
+  text-align: left;
+  margin: 0px;
   margin-right: 10px;
 }
 
-select.listWithSingleHighlight{
-	background-color: #FFFF00;
+select.listWithSingleHighlight {
+  background-color: #ffff00;
 }
 
 select.listWithHighlights option.highlighted {
-	background-color: #FFFF00;
+  background-color: #ffff00;
 }
 
 /*Element specific settings*/
 /*Top board*/
 #topPanel {
-    background-color: #DAC558;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  background-color: #dac558;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #topCenterPanel {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: 989px;
-    margin: auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 989px;
+  margin: auto;
 }
 
 #goIconButton {
-	background: url(../Graphics/goIcon46x46.png) no-repeat;
-	border: none;
-    background-color: #DAC558;
-	height: 48px;
-	width: 200px;
-	font-size: 30px;
-	text-align: left;
-	padding: 0px 50px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	margin-right: 0px;
-	margin-left: 0px;
+  background: url(../Graphics/goIcon46x46.png) no-repeat;
+  border: none;
+  background-color: #dac558;
+  height: 48px;
+  width: 200px;
+  font-size: 30px;
+  text-align: left;
+  padding: 0px 50px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 0px;
+  margin-left: 0px;
 }
 
 #goIconButtonForm {
-	width: auto;
-	padding: 0px;
-	margin-top: 0px;
-	margin-bottom: 0px;
-	margin-right: auto;
-	margin-left: 0px;
+  width: auto;
+  padding: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: auto;
+  margin-left: 0px;
 }
 
 #enLangButton {
-	background: url(../Graphics/ukFlag64x32.png) no-repeat;
-	border: 1px solid #000000;
-	width: 66px;
-	height: 34px;
-	margin: 10px 10px;
+  background: url(../Graphics/ukFlag64x32.png) no-repeat;
+  border: 1px solid #000000;
+  width: 66px;
+  height: 34px;
+  margin: 10px 10px;
 }
 
 #chLangButton {
-	background: url(../Graphics/chFlag64x32.png) no-repeat;
-	border: 1px solid #000000;
-	width: 66px;
-	height: 34px;
-	margin: 10px 10px;
+  background: url(../Graphics/chFlag64x32.png) no-repeat;
+  border: 1px solid #000000;
+  width: 66px;
+  height: 34px;
+  margin: 10px 10px;
 }
 
 /*Board.php*/
 #canvasDiv {
-	position: relative;
-	display: inline-block;
-	float: left;
+  position: relative;
+  display: inline-block;
+  float: left;
 }
 
 #canvasMessageDiv {
@@ -239,23 +253,64 @@ select.listWithHighlights option.highlighted {
 }
 
 #yourTurnDiv {
-	margin-left: 20px;
-	margin-right: 20px;
-	margin-bottom: 10px;
-	margin-top: 0px;
-	background-color: #00FF00;
-	width: 300px;
-	height: 100px;
-	line-height: 100px;
-	border: 2px dashed #f69c55;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 10px;
+  margin-top: 0px;
+  background-color: #00ff00;
+  width: 300px;
+  height: 100px;
+  line-height: 100px;
+  border: 2px dashed #f69c55;
 }
 
 #yourTurn {
-	font-size: 40px;
+  font-size: 40px;
+}
+
+#checkDiv {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 10px;
+  margin-top: 0px;
+  background-color: #ff0000;
+  width: 300px;
+  height: 100px;
+  line-height: 100px;
+  border: 2px dashed #f69c55;
+}
+
+#checkLabel {
+  font-size: 40px;
+}
+
+#chessCanvasMessageDiv {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  border: 3px solid green;
+  background: lightYellow;
+  padding: 5px 5px;
+  left: 240px;
+  top: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  display: none;
+}
+
+#chessCanvasButtonsDiv > button > img,
+#chessCanvasButtonsDiv > button > span {
+  vertical-align: middle;
+}
+
+#chessCanvasButtonsDiv > button {
+  width: auto;
+  margin: 5px;
 }
 
 /*Main.php*/
 #changelogLink {
-	margin-left: auto;
-	margin-right: 0px
+  margin-left: auto;
+  margin-right: 0px;
 }

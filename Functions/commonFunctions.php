@@ -1,8 +1,8 @@
 <?php
 include_once(__DIR__."/secrets.php");
 //Tells if real or debug database and session variables should be used.
-define("DEBUG",False);
-define("DEBUG_INFO",False);
+define("DEBUG",false);
+define("DEBUG_INFO",false);
 
 //Connect to database
 function dbCon(){
@@ -100,4 +100,8 @@ function unsetSession($attribute){
 	unset($_SESSION[$attribute]);
 }
 
+//Cool oneliner
+function sign($n) {
+	return ($n > 0) - ($n < 0);
+}
 ?>
