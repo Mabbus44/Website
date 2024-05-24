@@ -1,3 +1,7 @@
+V 1.06
+* Added chess (only playable if you have a hardcoded nemesis)
+* Confirm before passing turn in go
+
 V 1.05
 * Secrets in separate file
 * Page for viewing finished GO board (no link to it yet, but you can find it at rasmus.today/finishedboard.php?id=183
