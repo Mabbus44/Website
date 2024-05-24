@@ -7,6 +7,7 @@ function getChessNemesis(){
 	$id = getSession("id");
 	$chessNemeses = array();
 	$chessNemeses[] = array(13, 14);
+	$chessNemeses[] = array(15, 16);
 	foreach($chessNemeses as $chessNemesis){
 		if($id == $chessNemesis[0])
 			return $chessNemesis[1];

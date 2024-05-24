@@ -256,7 +256,12 @@ function setGameAndDraw(newGame = null) {
         }
         white = !white;
         //Draw square
-        ctx.fillRect(x * squareSize, y * squareSize, squareSize, squareSize);
+        ctx.fillRect(
+          swapBoard(x) * squareSize,
+          swapBoard(y) * squareSize,
+          squareSize,
+          squareSize
+        );
       }
       white = !white;
     }
@@ -275,16 +280,16 @@ function setGameAndDraw(newGame = null) {
         ctx.beginPath();
         if (game["board"][y][x] != "") {
           ctx.arc(
-            (x + 0.5) * squareSize,
-            (7 - y + 0.5) * squareSize,
+            (swapBoard(x) + 0.5) * squareSize,
+            (swapBoard(7 - y) + 0.5) * squareSize,
             squareSize / 2.5,
             0,
             2 * Math.PI
           );
         } else {
           ctx.arc(
-            (x + 0.5) * squareSize,
-            (7 - y + 0.5) * squareSize,
+            (swapBoard(x) + 0.5) * squareSize,
+            (swapBoard(7 - y) + 0.5) * squareSize,
             squareSize / 5,
             0,
             2 * Math.PI
@@ -300,8 +305,8 @@ function setGameAndDraw(newGame = null) {
           if (game["board"][y][x] != "") {
             ctx.drawImage(
               pieceIcons[game["board"][y][x]],
-              x * squareSize,
-              (7 - y) * squareSize,
+              swapBoard(x) * squareSize,
+              swapBoard(7 - y) * squareSize,
               squareSize,
               squareSize
             );
@@ -312,6 +317,12 @@ function setGameAndDraw(newGame = null) {
 
     return new Promise((res) => res(true));
   }, newGame);
+}
+
+//Flips the board if the player is black
+function swapBoard(c) {
+  if (playerColor == "black") return 7 - c;
+  return c;
 }
 
 //Show correct html elements according to whos turn it is
@@ -438,7 +449,7 @@ function mouseToBoard(x, y) {
     return null;
   }
   retY = 7 - retY;
-  return [retX, retY];
+  return [swapBoard(retX), swapBoard(retY)];
 }
 
 //Make move
