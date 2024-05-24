@@ -65,6 +65,7 @@
 				notYourTurnText = "<?php dict("Not your turn")?>";
 				selectLocationText = "<?php dict("Select location")?>";
 				areYouSureYouWantToGiveUpText = "<?php dict("Are you sure you want to give up?")?>";
+				areYouSureYouWantToPassText = "<?php dict("Are you sure you want to pass?")?>";
 				var blackStoneCanvas = document.getElementById("blackStone");
 				var bctx = blackStoneCanvas.getContext("2d");
 				bctx.fillStyle = "#000000";

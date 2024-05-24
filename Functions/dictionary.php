@@ -53,6 +53,8 @@
 			"No" 											=> array("No",											"不"),
 			"Ok" 											=> array("Ok",											"好"),
 			"Are you sure you want to give up?" 											=> array("Are you sure you want to give up?",											"确定放弃？"),
+			"Are you sure you want to pass?" 													=> array("Are you sure you want to pass?",												"确定过？"),
+						
 			"Select location" 				=> array("Select location",					"选择地点"),
 			"Preview score" 					=> array("Preview score",						"分数预览"),
 			"Win" 										=> array("Win",											"赢"),

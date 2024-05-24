@@ -14,6 +14,7 @@ var yourTurnText = "";
 var notYourTurnText = "";
 var selectLocationText = "";
 var areYouSureYouWantToGiveUpText = "";
+var areYouSureYouWantToPassText = "";
 var blockingPopup = false;
 var popupFunction = null;
 var tabInFocus = true;
@@ -104,37 +105,39 @@ function btnPass() {
   if (blockingPopup) {
     return;
   }
-  try {
-    $.ajax({
-      type: "POST",
-      url: "../Functions/passTurn.php",
-      data: { matchID: matchIndex },
-      success: function (obj, textstatus) {
-        var obj = JSON.parse(obj);
-        if ("info" in obj) {
-          if ("action" in obj && obj["action"] == "turn passed") {
-            markedSquare = [-1, -1];
-            nextMoveIndex = nextMoveIndex + 1;
-            lastColor = 1 - lastColor;
-            document.getElementById("yourTurn").innerHTML = notYourTurnText;
-            document.getElementById("yourTurnDiv").style.display = "none";
-            lastAction = "pass";
-            startServerPushing();
-            draw();
+  showMessage(areYouSureYouWantToPassText, "YesNo", function () {
+    try {
+      $.ajax({
+        type: "POST",
+        url: "../Functions/passTurn.php",
+        data: { matchID: matchIndex },
+        success: function (obj, textstatus) {
+          var obj = JSON.parse(obj);
+          if ("info" in obj) {
+            if ("action" in obj && obj["action"] == "turn passed") {
+              markedSquare = [-1, -1];
+              nextMoveIndex = nextMoveIndex + 1;
+              lastColor = 1 - lastColor;
+              document.getElementById("yourTurn").innerHTML = notYourTurnText;
+              document.getElementById("yourTurnDiv").style.display = "none";
+              lastAction = "pass";
+              startServerPushing();
+              draw();
+            }
+            if ("action" in obj && obj["action"] == "game ended") {
+              showMessage(obj["info"], "Ok", function () {
+                window.location.href = "../Pages/main.php";
+              });
+            } else {
+              showMessage(obj["info"]);
+            }
           }
-          if ("action" in obj && obj["action"] == "game ended") {
-            showMessage(obj["info"], "Ok", function () {
-              window.location.href = "../Pages/main.php";
-            });
-          } else {
-            showMessage(obj["info"]);
-          }
-        }
-      },
-    });
-  } catch (err) {
-    window.alert(err.message);
-  }
+        },
+      });
+    } catch (err) {
+      window.alert(err.message);
+    }
+  });
 }
 
 //Give up
