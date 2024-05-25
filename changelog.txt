@@ -1,3 +1,6 @@
+v 1.07
+* Added chinese chess translations
+
 V 1.06
 * Added chess (only playable if you have a hardcoded nemesis)
 * Confirm before passing turn in go

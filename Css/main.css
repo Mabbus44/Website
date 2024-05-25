@@ -197,6 +197,30 @@ select.listWithHighlights option.highlighted {
   margin-left: 0px;
 }
 
+#chessIconButton {
+  background: url(../Graphics/goIcon46x46.png) no-repeat;
+  border: none;
+  background-color: #dac558;
+  height: 48px;
+  width: 300px;
+  font-size: 30px;
+  text-align: left;
+  padding: 0px 50px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+#chessIconButtonForm {
+  width: auto;
+  padding: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: auto;
+  margin-left: 0px;
+}
+
 #enLangButton {
   background: url(../Graphics/ukFlag64x32.png) no-repeat;
   border: 1px solid #000000;

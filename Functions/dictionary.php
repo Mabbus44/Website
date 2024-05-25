@@ -65,15 +65,15 @@
 			"Match history" 					=> array("Match history",						"游戏历史记录"),
 			"Rules" 									=> array("Rules",										"规则"),
 			"Chess"										=> array("Chess",										"国际象棋"),
-			"Check"										=> array("Check",										"Check"),
-			"Check mate"							=> array("Check mate",							"Check mate"),
-			"Draw"										=> array("Draw",										"Draw"),
-			"Someone won"							=> array("[name] won. Start new game as:",										"[name] won. Start new game as:"),
-			"Drawresult"							=> array("Draw. Start new game as:","Draw. Start new game as:"),
-			"White"										=> array("White",										"White"),
-			"Black"										=> array("Black",										"Black"),
-			"Start new game"					=> array("Start new game as:",			"Start new game:"),
-			"Starting new game"				=> array("Starting new game...",				"Starting new game...")
+			"Check"										=> array("Check",										"将军"),
+			"Check mate"							=> array("Check mate",							"结束"),
+			"Draw"										=> array("Draw",										"平局"),
+			"Someone won"							=> array("[name] won. Start new game as:",										"[name] 赢了. 开始新的一局，颜色:"),
+			"Drawresult"							=> array("Draw. Start new game as:","平局. 开始新的一局，颜色:"),
+			"White"										=> array("White",										"白色"),
+			"Black"										=> array("Black",										"黑色"),
+			"Start new game"					=> array("Start new game as:",			"开始新的一局，颜色:"),
+			"Starting new game"				=> array("Starting new game...",				"开始新的一局...")
 		);
 		if(array_key_exists($keyStr, $words)){
 			return $words[$keyStr][$lang];

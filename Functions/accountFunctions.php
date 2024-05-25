@@ -90,8 +90,8 @@ function topPanel(){
 function chessTopPanel(){
 	echo "<div id=\"topPanel\">";
 	echo	 "<div id=\"topCenterPanel\">";
-	echo		 "<form id=\"goIconButtonForm\" action=\"../Pages/chessBoard.php\">";
-	echo		 	 "<button type=\"submit\" id=\"goIconButton\">".dictRet("Chess")."</button>";
+	echo		 "<form id=\"chessIconButtonForm\" action=\"../Pages/chessBoard.php\">";
+	echo		 	 "<button type=\"submit\" id=\"chessIconButton\">".dictRet("Chess")."</button>";
 	echo		 "</form>";
 	echo		 "<button id=\"enLangButton\" type=\"button\" onclick=\"changeLanguage(0)\"></button>";
 	echo		 "<button id=\"chLangButton\" type=\"button\" onclick=\"changeLanguage(1)\"></button>";
