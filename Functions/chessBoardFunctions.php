@@ -400,7 +400,7 @@ function isMoveValid(&$game, $move){
 			return false;
 	}elseif(str_contains($board[$y][$x], "B")){
 		if(!(
-				($distY == $pawnDir && $distX == 0) ||
+				($distY == $pawnDir && $distX == 0 && $board[$toY][$toX] == "") ||
 				($distY == $pawnDir && $diffX == 1 && str_contains($board[$toY][$toX], $oponentColor)) ||
 				($distY == $pawnDir * 2 && $diffX == 0 && $board[$toY][$toX] == "" && ($y == 1 || $y == 6))
 				)){
