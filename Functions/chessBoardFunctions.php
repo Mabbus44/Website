@@ -116,6 +116,38 @@ function getAllChessMoves($matchIndex){
 	return $result;
 }
 
+//Gets x moves of a match
+function getSomeChessMoves($matchIndex, $moveIndex){
+	if(DEBUG_INFO)
+		er("getSomeChessMoves()");
+	//Conect to database
+	$conn = dbCon();
+	if(!$conn)
+		exit();
+
+	//Read moves from database
+	$stmt = ps($conn, "SELECT `fromX`, `fromY`, `toX`, `toY` FROM `tableName` WHERE `matchIndex` = ? AND `moveIndex` <= ? ORDER BY `moveIndex` ASC", "currentChessGames");
+	$stmt->bind_param("ii", $matchIndex, $moveIndex);
+	if(!$stmt->execute()){
+		er("Prepared statement failed (" . $stmt->errno . ") " . $stmt->error . " `SELECT `fromX`, `fromY`, `toX`, `toY` FROM `tableName` WHERE `matchIndex` = ? AND `moveIndex` <= ? ORDER BY `moveIndex` ASC", "currentChessGames`");
+		exit();
+	}
+	
+	//Extract and return moves
+	$moves = $stmt->get_result();
+	$stmt->close();
+	$rowNum = 0;
+	$result = array();
+	if($moves->num_rows > 0) {
+		while($row = $moves->fetch_assoc()) {
+			$result[$rowNum] = $row;
+			$rowNum = $rowNum + 1;
+		}
+	}
+	$conn->close();
+	return $result;
+}
+
 //Gets all moves from db and transform them into a board
 function getChessBoard($matchIndex){
 	if(DEBUG_INFO)
@@ -124,6 +156,36 @@ function getChessBoard($matchIndex){
 	//Get all moves
 	$game = array();
 	$game["moves"] = getAllChessMoves($matchIndex);
+	
+	//Setup starting board
+	$game["board"] = getStartingChessBoard();
+
+	//Make the moves
+	for($i=0; $i<sizeof($game["moves"]); $i++){
+		performChessMove($game["moves"][$i], $game["board"]);
+	}
+	
+	setAllValidMoves($game);
+	$game["checkStatus"] = getCheckState($game);
+	$game["color"] = "black";
+	if(sizeof($game["moves"]) % 2 == 0)
+		$game["color"] = "white";
+	$playerIds = getPlayerIds($matchIndex);
+	$game["whiteId"] = $playerIds[0];
+	$game["blackId"] = $playerIds[1];
+	$game["whiteName"] = getNameFromID($game["whiteId"]);
+	$game["blackName"] = getNameFromID($game["blackId"]);
+	return $game;
+}
+
+//Gets x moves from db and transform them into a board
+function getChessBoardAtMove($matchIndex, $moveIndex){
+	if(DEBUG_INFO)
+		er("getChessBoardAtMove()");
+	
+	//Get x moves
+	$game = array();
+	$game["moves"] = getSomeChessMoves($matchIndex, $moveIndex);
 	
 	//Setup starting board
 	$game["board"] = getStartingChessBoard();
